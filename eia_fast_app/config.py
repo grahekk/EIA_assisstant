@@ -1,4 +1,4 @@
-from pydantic-settings import BaseSettings
+from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     env_name: str = "Local"
@@ -14,4 +14,4 @@ def get_settings() -> Settings:
     return settings
 
 
-get_settings().db_url
+# get_settings().db_url
