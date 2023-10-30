@@ -27,25 +27,74 @@ async def upload_shapefile(file: UploadFile):
     import geopandas as gpd
     import fiona
     import zipfile
-    import StringIO
-    import shapefile
+    # from io import StringIO
+    # import shapefile
     
     fiona.drvsupport.supported_drivers['kml'] = 'rw' # enable KML support which is disabled by default
     fiona.drvsupport.supported_drivers['KML'] = 'rw' # enable KML support which is disabled by default
 
 
-    zipshape = zipfile.ZipFile(open(r'C:\GIS\Temp\RoadsShapefileFolder.zip', 'rb'))
-    print(zipshape.namelist())
-    dbfname, _, shpname, _, shxname = zipshape.namelist()
-    r = shapefile.Reader(shp=StringIO.StringIO(zipshape.read(shpname)),
-                        shx=StringIO.StringIO(zipshape.read(shxname)),
-                        dbf=StringIO.StringIO(zipshape.read(dbfname)))
+    # zipshape = zipfile.ZipFile(open(file.filename, 'rb'))
+    # print(zipshape.namelist())
+    # dbfname, _, shpname, _, shxname = zipshape.namelist()
+    # r = shapefile.Reader(shp=StringIO.StringIO(zipshape.read(shpname)),
+    #                     shx=StringIO.StringIO(zipshape.read(shxname)),
+    #                     dbf=StringIO.StringIO(zipshape.read(dbfname)))
 
-    print(r.bbox)
-    print(r.numRecords)
+    # print(r.bbox)
+    # print(r.numRecords)
 
     data = gpd.read_file(file.filename)
     feature = data.iloc[0]  # Get the first feature
     geometry_type = shape(feature['geometry']).geom_type
 
-    return {"name": file.filename, "geometry_type": geometry_type}
+    return {"name": file.filename, "geometry_type": geometry_type} #response body json
+
+from fastapi import FastAPI, UploadFile
+from pydantic import BaseModel
+from sqlalchemy import create_engine, Column, Integer, String, Binary
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.exc import IntegrityError
+
+app = FastAPI()
+
+# Step 1: Define a Pydantic model for file validation
+class GeoPackageUpload(BaseModel):
+    file: UploadFile
+
+# Step 2: Create a SQLAlchemy model for the database table
+DATABASE_URL = "sqlite:///./test.db"
+Base = declarative_base()
+
+class GeoPackage(Base):
+    __tablename__ = "geopackages"
+    id = Column(Integer, primary_key=True, index=True)
+    filename = Column(String, unique=True, index=True)
+    content = Column(Binary)
+
+# Initialize the database
+engine = create_engine(DATABASE_URL)
+Base.metadata.create_all(bind=engine)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# Step 3: Use Pydantic models for request validation and response serialization
+@app.post("/upload/")
+async def upload_gpkg(gpkg: GeoPackageUpload):
+    file = gpkg.file
+    if file.content_type != "application/octet-stream":
+        return {"error": "Only GeoPackage files (.gpkg) are allowed."}
+
+    # Read the file content
+    file_content = file.file.read()
+
+    # Step 4: Perform database operations using SQLAlchemy
+    try:
+        db = SessionLocal()
+        db.add(GeoPackage(filename=file.filename, content=file_content))
+        db.commit()
+        db.close()
+    except IntegrityError:
+        return {"error": "File with the same name already exists in the database."}
+
+    return {"filename": file.filename, "content_type": file.content_type}
