@@ -124,3 +124,10 @@ cython_debug/
 
 # PyCharm
 .idea/
+
+# shapefiles
+*.shp
+*.kml
+*.gpkg
+*.geojson
+*.gml
