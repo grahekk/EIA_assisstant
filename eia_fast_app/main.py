@@ -31,17 +31,32 @@ async def upload_shapefile(file: UploadFile):
     return {"name": file.filename, "geometry_type": geometry_type} #response body json
 
 
-@app.post("/upload-geojson/")
-# async def upload_geojson(file: UploadFile, geojson_data: GeoJSONData):
-async def upload_geojson(file: UploadFile):
-    # Check the uploaded .geojson data against the GeoJSONData model
-    # if not geojson_data:
-    #     return {"error": "Invalid .geojson data."}
+# Define a temporary directory to store uploaded files
+temp_dir = tempfile.TemporaryDirectory()
 
-    # If the .geojson data is valid, you can access it using geojson_data
-    # features = geojson_data.features
+@app.post("/upload-geo-file/")
+async def upload_geo_file(file: UploadFile):
+    # Ensure that the uploaded file is a valid geospatial format (GeoJSON, GPKG, or SHP)
+    valid_extensions = {'.json', '.geojson', '.gpkg', '.shp'}
+    ext = os.path.splitext(file.filename)[1]
+    if ext not in valid_extensions:
+        return JSONResponse(content={"error": "Invalid file format"}, status_code=400)
 
-    # Your file-saving and processing logic here
-    # ...
+    # Save the uploaded file to the temporary directory
+    file_path = os.path.join(temp_dir.name, file.filename)
+    with open(file_path, "wb") as f:
+        f.write(file.file.read())
 
-    return {"message": "GeoJSON file uploaded successfully."}
+    # Read the uploaded geospatial file using GeoPandas
+    try:
+        gdf = gpd.read_file(file_path)
+        # Perform any geospatial operations you need on the `gdf` here
+        # For example, you can access the geometries using gdf.geometry
+
+        return JSONResponse(content={"message": "File uploaded and processed successfully"})
+    except Exception as e:
+        return JSONResponse(content={"error": f"Error processing geospatial data: {str(e)}"}, status_code=500)
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
