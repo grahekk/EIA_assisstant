@@ -1,7 +1,12 @@
 from fastapi import FastAPI, File, UploadFile
 from shapely.geometry import shape
 from pydantic import BaseModel
-from app.models.file import GeoJSONData
+# from app.models.file import GeoJSONData
+from starlette.responses import JSONResponse
+import geopandas as gpd
+import tempfile
+import os
+
 
 app = FastAPI()
 
