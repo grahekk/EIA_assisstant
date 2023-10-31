@@ -12,19 +12,15 @@ class GeoJSONData(BaseModel):
     type: str
     features: List[GeoJSONFeature]
 
-
-
- 
+# validate polygons
  
 class Latitude(BaseModel):
-    ge = -90
-    le = 90
- 
- 
+    value: confloat(ge=-90, le=90)
+
 class Longitude(BaseModel):
-    ge = -180
-    le = 180
+    value: confloat(ge=-180, le=180)
  
+
 class RawPolygon(BaseModel):
     __root__: conlist(conlist(Tuple[Longitude, Latitude], min_items=3), min_items=1)
     _polygon: Polygon = PrivateAttr()
