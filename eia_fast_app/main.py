@@ -57,9 +57,10 @@ async def upload_geo_file(file: UploadFile):
         # Perform any geospatial operations you need on the `gdf` here
         # For example, you can access the geometries using gdf.geometry
         file_content = file.file.read()
-        print(file_content)
-        geometry = gdf.geometry
-        new_data = GeoSpatialService.create_geospatial_data(name="Example Data", geometry=geometry)
+        geometry = gdf.geometry()
+        geospatial_service = GeoSpatialService()
+        new_data = geospatial_service.create_geospatial_data(name="Example Data", geometry=geometry)
+        # GeoSpatialService.create_geospatial_data(name="Example Data", geometry=geometry)
 
         return JSONResponse(content={"message": "File uploaded and processed successfully", "new_data": f"new data is inserted sucessfuly like {new_data} and status code is 201"})
     except Exception as e:
