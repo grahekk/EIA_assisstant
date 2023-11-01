@@ -6,6 +6,10 @@ from starlette.responses import JSONResponse
 import geopandas as gpd
 import tempfile
 import os
+from dotenv import load_dotenv
+from app.config import settings
+
+from app.services.geospatial_service import GeoSpatialService
 
 
 app = FastAPI()
@@ -57,6 +61,8 @@ async def upload_geo_file(file: UploadFile):
         gdf = gpd.read_file(file_path)
         # Perform any geospatial operations you need on the `gdf` here
         # For example, you can access the geometries using gdf.geometry
+        file_content = file.file.read()
+        upload_file_to_db(file, file.file_content)
 
         return JSONResponse(content={"message": "File uploaded and processed successfully"})
     except Exception as e:
@@ -64,4 +70,4 @@ async def upload_geo_file(file: UploadFile):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=8000)
