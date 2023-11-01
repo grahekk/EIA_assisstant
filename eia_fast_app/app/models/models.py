@@ -9,4 +9,4 @@ class GeoSpatialData(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
     crs = 3765
-    geometry = Column(Geometry("GEOMETRY", srid=crs))
+    geometry = Column(Geometry(srid=crs))
