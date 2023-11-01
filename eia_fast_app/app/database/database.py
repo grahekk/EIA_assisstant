@@ -3,10 +3,10 @@ from sqlalchemy import Column, Integer, String
 from geoalchemy2 import Geometry
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from config.config import settings
 
-DATABASE_URL = settings.database_url
+from config.config import database_url
 
+DATABASE_URL = database_url
 Base = declarative_base()
 
 class GeoSpatialData(Base):
