@@ -7,7 +7,6 @@ import geopandas as gpd
 import tempfile
 import os
 from dotenv import load_dotenv
-from app.config import settings
 
 from app.services.geospatial_service import GeoSpatialService
 
@@ -17,10 +16,6 @@ app = FastAPI()
 @app.get("/")
 def read_root():
     return "Welcome to the eia assistant API :)"
-
-class ShapefileData(BaseModel):
-    name: str
-    geometry_type: str
 
 
 @app.post("/upload_shapefile/")
@@ -62,9 +57,11 @@ async def upload_geo_file(file: UploadFile):
         # Perform any geospatial operations you need on the `gdf` here
         # For example, you can access the geometries using gdf.geometry
         file_content = file.file.read()
-        upload_file_to_db(file, file.file_content)
+        print(file_content)
+        geometry = gdf.geometry
+        new_data = GeoSpatialService.create_geospatial_data(name="Example Data", geometry=geometry)
 
-        return JSONResponse(content={"message": "File uploaded and processed successfully"})
+        return JSONResponse(content={"message": "File uploaded and processed successfully", "new_data": f"new data is inserted sucessfuly like {new_data} and status code is 201"})
     except Exception as e:
         return JSONResponse(content={"error": f"Error processing geospatial data: {str(e)}"}, status_code=500)
 
