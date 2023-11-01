@@ -1,4 +1,4 @@
-from app.database import SessionLocal
+from app.database.database import SessionLocal
 from app.models.models import GeoSpatialData
 
 class GeoSpatialService:
