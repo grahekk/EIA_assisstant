@@ -5,16 +5,10 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 from config.config import database_url
+from app.models.models import GeoSpatialData
 
 DATABASE_URL = database_url
 Base = declarative_base()
-
-class GeoSpatialData(Base):
-    __tablename__ = "geospatial_data"
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True)
-    geometry = Column(Geometry("GEOMETRY", srid=4326))
-
 engine = create_engine(DATABASE_URL)
 Base.metadata.create_all(bind=engine)
 
