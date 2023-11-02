@@ -7,6 +7,8 @@ import geopandas as gpd
 import tempfile
 import os
 from dotenv import load_dotenv
+from shapely import wkb
+import shapely
 
 from app.services.geospatial_service import GeoSpatialService
 
@@ -56,13 +58,15 @@ async def upload_geo_file(file: UploadFile):
         gdf = gpd.read_file(file_path)
         # Perform any geospatial operations you need on the `gdf` here
         # For example, you can access the geometries using gdf.geometry
-        file_content = file.file.read()
-        geometry = gdf.geometry()
+        geometry = gdf['geometry'].values[0]
+        geometry_type = geometry.type
+        print(geometry)
+        print(geometry_type)
+        
         geospatial_service = GeoSpatialService()
         new_data = geospatial_service.create_geospatial_data(name="Example Data", geometry=geometry)
-        # GeoSpatialService.create_geospatial_data(name="Example Data", geometry=geometry)
 
-        return JSONResponse(content={"message": "File uploaded and processed successfully", "new_data": f"new data is inserted sucessfuly like {new_data} and status code is 201"})
+        return JSONResponse(content={"message": "File uploaded and processed successfully", "new_data": f"new data is inserted sucessfuly like {new_data.id} and status code is 201"})
     except Exception as e:
         return JSONResponse(content={"error": f"Error processing geospatial data: {str(e)}"}, status_code=500)
 
