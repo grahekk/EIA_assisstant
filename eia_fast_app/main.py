@@ -56,15 +56,17 @@ async def upload_geo_file(file: UploadFile):
     # Read the uploaded geospatial file using GeoPandas
     try:
         gdf = gpd.read_file(file_path)
-        # Perform any geospatial operations you need on the `gdf` here
-        # For example, you can access the geometries using gdf.geometry
-        geometry = gdf['geometry'].values[0]
-        geometry_type = geometry.type
-        print(geometry)
-        print(geometry_type)
-        
+
+        # geometry = gdf['geometry'].values[0]
+        # geometry = gdf['geometry']
+        # geometry = gdf.geometry
+        # geometry_type = geometry.type
+        # print(geometry)
+        # print(geometry_type)
+
         geospatial_service = GeoSpatialService()
-        new_data = geospatial_service.create_geospatial_data(name="Example Data", geometry=geometry)
+        new_data_id = geospatial_service.create_geospatial_data(name="Example Data", file=file_path)
+        new_data = geospatial_service.get_geospatial_data(new_data_id)
 
         return JSONResponse(content={"message": "File uploaded and processed successfully", "new_data": f"new data is inserted sucessfuly like {new_data.id} and status code is 201"})
     except Exception as e:

@@ -5,10 +5,9 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 from config.config import database_url
-from app.models.models import GeoSpatialData
+from app.models.models import GeoSpatialData, Base
 
 DATABASE_URL = database_url
-Base = declarative_base()
 engine = create_engine(DATABASE_URL)
 Base.metadata.create_all(bind=engine)
 
