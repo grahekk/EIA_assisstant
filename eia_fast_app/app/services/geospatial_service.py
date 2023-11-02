@@ -23,8 +23,8 @@ class GeoSpatialService:
         geometry = gdf.to_wkt()['geometry'].values[0]
         data = GeoSpatialData(name=name, geom=geometry)
         db.add(data)
-        data_id = data.id
         db.commit()
+        data_id = data.id
         db.close()
         return data_id
 
