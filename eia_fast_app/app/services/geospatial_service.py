@@ -1,10 +1,17 @@
+from geoalchemy2 import WKBElement
+from geoalchemy2.shape import from_shape
+from shapely.geometry import shape
+import geopandas as gpd
+
 from app.database.database import SessionLocal
 from app.models.models import GeoSpatialData
 
 class GeoSpatialService:
     def create_geospatial_data(self, name: str, geometry: str):
         db = SessionLocal()
-        data = GeoSpatialData(name=name, geometry=geometry)
+        geometry = from_shape(shape(geometry)) # put ewkt
+        print("this is geometry from service ",geometry)
+        data = GeoSpatialData(name=name, geom=geometry)
         db.add(data)
         db.commit()
         db.close()
