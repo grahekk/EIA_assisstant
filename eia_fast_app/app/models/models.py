@@ -11,3 +11,17 @@ class GeoSpatialData(Base):
     crs = 3765
     # geometry_type: str
     geom = Column(Geometry(srid=crs))
+
+class NaturaHabitats(Base):
+    __tablename__ = 'data.povs'
+    id = Column("ogc_fid", Integer, primary_key=True)
+    site_code = Column("sitecode",String)
+    site_name = Column("sitename",String)
+    geom = Column(Geometry('POLYGON'))
+
+class NaturaBirds(Base):
+    __tablename__ = 'data.pop'
+    id = Column("ogc_fid", Integer, primary_key=True)
+    site_code = Column("sitecode",String)
+    site_name = Column("sitename",String)
+    geom = Column(Geometry('POLYGON'))

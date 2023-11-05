@@ -11,15 +11,8 @@ from app.models.models import GeoSpatialData
 class GeoSpatialService:
     def create_geospatial_data(self, name: str, file: str):
         db = SessionLocal()
-        # geometry = to_wkt(geometry)
+
         gdf = gpd.read_file(file)
-        # data = gdf.to_postgis(name="input_geospatial_data", con=db.bind, if_exists="append", index = True)
-
-        # geometry = shape(gdf)
-        # geometry = from_shape(geometry) # TODO: put ewkt
-        # print("this is geometry from service ", geometry)
-        # geometry = gdf.to_wkt()
-
         geometry = gdf.to_wkt()['geometry'].values[0]
         data = GeoSpatialData(name=name, geom=geometry)
         db.add(data)

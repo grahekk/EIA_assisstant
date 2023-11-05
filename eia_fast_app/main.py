@@ -55,15 +55,6 @@ async def upload_geo_file(file: UploadFile):
 
     # Read the uploaded geospatial file using GeoPandas
     try:
-        gdf = gpd.read_file(file_path)
-
-        # geometry = gdf['geometry'].values[0]
-        # geometry = gdf['geometry']
-        # geometry = gdf.geometry
-        # geometry_type = geometry.type
-        # print(geometry)
-        # print(geometry_type)
-
         geospatial_service = GeoSpatialService()
         new_data_id = geospatial_service.create_geospatial_data(name="Example Data", file=file_path)
         new_data = geospatial_service.get_geospatial_data(new_data_id)
