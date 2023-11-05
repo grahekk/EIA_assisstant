@@ -43,7 +43,7 @@ temp_dir = tempfile.TemporaryDirectory()
 @app.post("/upload-geo-file/")
 async def upload_geo_file(file: UploadFile):
     # Ensure that the uploaded file is a valid geospatial format (GeoJSON, GPKG, or SHP)
-    valid_extensions = {'.json', '.geojson', '.gpkg', '.shp'}
+    valid_extensions = {'.kml', '.geojson', '.gpkg', '.shp'}
     ext = os.path.splitext(file.filename)[1]
     if ext not in valid_extensions:
         return JSONResponse(content={"error": "Invalid file format"}, status_code=400)
@@ -62,6 +62,13 @@ async def upload_geo_file(file: UploadFile):
         return JSONResponse(content={"message": "File uploaded and processed successfully", "new_data": f"new data is inserted sucessfuly like {new_data.id} and status code is 201"})
     except Exception as e:
         return JSONResponse(content={"error": f"Error processing geospatial data: {str(e)}"}, status_code=500)
+    
+@app.get("/get-spatial-data")
+async def get_spatial_data(id):
+    geospatial_service = GeoSpatialService()
+    data = geospatial_service.get_overlapping(id, "povs")
+    return JSONResponse(content={"message": f"For the {id} there is this data found", "data": f"{data}"})
+
 
 if __name__ == "__main__":
     import uvicorn

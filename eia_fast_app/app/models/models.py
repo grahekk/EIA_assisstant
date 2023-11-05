@@ -8,9 +8,10 @@ class GeoSpatialData(Base):
     __tablename__ = "input_geospatial_data"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
-    crs = 3765
+    # crs = 4326
     # geometry_type: str
-    geom = Column(Geometry(srid=crs))
+    # geom = Column(Geometry(srid=crs))
+    geom = Column(Geometry())
 
 class NaturaHabitats(Base):
     __tablename__ = 'data.povs'
