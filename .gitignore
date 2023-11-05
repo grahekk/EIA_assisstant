@@ -128,6 +128,11 @@ cython_debug/
 
 # shapefiles
 *.shp
+*.shx
+*.cpg
+*.prj
+*.dbf
+*.qmd
 *.kml
 *.gpkg
 *.geojson
