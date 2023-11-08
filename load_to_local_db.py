@@ -12,17 +12,17 @@ class TableCreationQuery():
     def __init__(self, table_name):
         self.table_name = table_name
 
-    def get_creation_string(self.table_name):
+    def get_creation_string(self):
         if self.table_name == "Uredba_NN8019_0_Natura":
             create_execute_string = f"""
             CREATE TABLE {table_name}(
             id integer PRIMARY KEY,
             natura_kod text,
             name text,
-            cro_name text
-            biogeo_region_cont text
-            biogeo_region_alpine text
-            biogeo_region_med text
+            cro_name text,
+            biogeo_region_cont text,
+            biogeo_region_alpine text,
+            biogeo_region_med text,
             biogeo_region_sea_med text
             )
             """
@@ -35,12 +35,12 @@ class TableCreationQuery():
             class text,
             order text,
             family text,
-            name_by_directive text
-            name text
-            cro_name text
-            biogeo_region_cont text
-            biogeo_region_alpine text
-            biogeo_region_med text
+            name_by_directive text,
+            name text,
+            cro_name text,
+            biogeo_region_cont text,
+            biogeo_region_alpine text,
+            biogeo_region_med text,
             biogeo_region_sea_med text
             )
             """
@@ -51,9 +51,9 @@ class TableCreationQuery():
             CREATE TABLE {table_name}(
             id integer PRIMARY KEY,
             family text,
-            name text
-            cro_name text
-            status text
+            name text,
+            cro_name text,
+            status text,
             category text
             )
             """
@@ -64,12 +64,12 @@ class TableCreationQuery():
             CREATE TABLE {table_name}(
             id integer PRIMARY KEY,
             sitecode text,
-            sitename text
-            category text
-            name text
-            cro_name text
-            status_g text
-            status_p text
+            sitename text,
+            category text,
+            name text,
+            cro_name text,
+            status_g text,
+            status_p text,
             status_z text
             )
             """
@@ -90,7 +90,7 @@ class TableCreationQuery():
 
 
 
-with psycopg2.connect(**config_args, options = "-c search_path=data, public") as conn:
+with psycopg2.connect(**config_args, options = "-c search_path=data,public") as conn:
     with conn.cursor() as cur:
         for i in files_to_move_to_pg:
             table_name = os.path.basename(i)
