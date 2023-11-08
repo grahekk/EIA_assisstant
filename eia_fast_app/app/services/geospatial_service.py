@@ -41,14 +41,10 @@ class GeoSpatialService:
     def get_overlapping(self, id, layer):
         db = SessionLocal()
         data = db.query(GeoSpatialData).filter(GeoSpatialData.id == id).first()
-        # return_data = db.query(natura_habitats).filter(natura_habitats.geom.intersects(data.geom)).first()
 
-        # return_data = db.query(natura_habitats)
-        return_data = db.query(natura_habitats.c.sitename).filter(natura_habitats.c.geom.intersects(func.ST_transform(data.geom, 3765))).all()
-        # return_data = db.query(natura_habitats).filter(natura_habitats.geom.intersects(func.ST_transform(data.geom, 3765))).first()
-        # return_data = db.query(NaturaHabitats).filter(NaturaHabitats.geom.intersects(func.ST_transform(data.geom, 4326))).first()
-        # print(db.query(func.ST_transform(data.geom, 4326)).first())
-        # print(db.query(func.ST_transform(data.geom, 3765)).first())
-        print(return_data)
+        site_name = db.query(natura_habitats.c.sitename).filter(natura_habitats.c.geom.intersects(func.ST_transform(data.geom, 3765))).all()
+        site_species = db.query()
+
+        return_data = [site_name]
         db.close()
         return return_data
