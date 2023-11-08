@@ -9,7 +9,7 @@ load_dotenv()
 # SECRET_KEY = os.getenv("SECRET_KEY")
 
 db_name = os.getenv("db_name")
-username = os.getenv("user")
+user = os.getenv("user")
 password = os.getenv("password")
 host = os.getenv("host")
 port = os.getenv("port")

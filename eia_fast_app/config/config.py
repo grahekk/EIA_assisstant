@@ -1,14 +1,14 @@
 from pydantic_settings import BaseSettings
-from .dotenv_settings import port, host, username, password, db_name
+from .dotenv_settings import port, host, user, password, db_name
 
-config_args = {"port": port, 
-               "host": host,
-               "username": username, 
-                "db_name": db_name,
-                "password": password
+config_args = {"host": host,
+               "user": user, 
+               "port": port,
+                "password": password,
+                "dbname": db_name
 }
 
-database_url: str = f"postgresql://{username}:{password}@{host}:{port}/{db_name}"
+database_url: str = f"postgresql://{user}:{password}@{host}:{port}/{db_name}"
 
 # class LocalSettings(BaseSettings):
 #     env_name: str = "Local"
