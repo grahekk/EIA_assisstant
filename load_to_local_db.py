@@ -88,8 +88,7 @@ class TableCreationQuery():
             """
             return create_execute_string
 
-
-
+# first create tables
 with psycopg2.connect(**config_args, options = "-c search_path=data,public") as conn:
     with conn.cursor() as cur:
         for i in files_to_move_to_pg:
@@ -98,11 +97,31 @@ with psycopg2.connect(**config_args, options = "-c search_path=data,public") as 
 
             new_query = TableCreationQuery(table_name)
             create_execute_string = new_query.get_creation_string()
+            try:
+                cur.execute(create_execute_string)
+                conn.commit()
+            except psycopg2.errors.DuplicateTable:
+                print(f"Relation {table_name} already exists, so creating it was skipped")
+                pass
 
-            cur.execute(create_execute_string)
-            
+# then insert tables
+with psycopg2.connect(**config_args, options = "-c search_path=data,public") as conn:
+    with conn.cursor() as cur:
+        for i in files_to_move_to_pg:
+            table_name = os.path.basename(i)
+            table_name = table_name.split(".")[0]
+
+            # new_query = TableCreationQuery(table_name)
+            # create_execute_string = new_query.get_creation_string()
+            # try:
+            #     cur.execute(create_execute_string)
+            #     conn.commit()
+            # except psycopg2.errors.DuplicateTable:
+            #     print(f"Relation {table_name} already exists, so creating it was skipped")
+            #     pass
+
             with open(i, 'r', encoding="utf-8") as f:
                 next(f) # Skip the header row.
                 cur.copy_from(f, table_name, sep=',')
 
-conn.commit()
+            conn.commit()
