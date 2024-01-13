@@ -1,0 +1,2 @@
+FLASK_APP=eia.py
+FLASK_DEBUG=1
