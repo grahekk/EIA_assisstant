@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class = "container-fluid">
+
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">New development project</h1>
+    </div>
+
+    <div class="col-lg-7">
+        <form action="" method="post">
+            {{ form.hidden_tag() }}
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        {{ form.project_title.label(size=32) }}
+                    </h6>
+                </div>
+                <div class="card-body">
+                    How do you want your project to be called?<br>
+                    {{ form.project_title(size=60) }}<br>
+                </div>
+            </div>
+        </div>
+        
+       <div class="row">
+           <div class="col-lg-6">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">
+                            {{ form.description.label(size="20") }}
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        What's the description and type of your project?<br>
+                        {{ form.description(cols=50, rows=7) }}<br>
+                        {{ form.project_type.label }}<br>
+                        {{ form.project_type }}<br>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">
+                            Location
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <p>What are the coordinates of your project? </p>
+                        <p> *Advice* it is very advisable to choose somewhere in Croatia - therefore lat would be around 45 and lon would be between 14 and 16,
+                        if you're not sure where to click, <a href="https://www.bioportal.hr/gis/"> see here </a> where you could potentially put your project </p>
+                        {{ form.lat.label }}<br>
+                        {{ form.lat(size=32) }}<br>
+           
+                        {{ form.lon.label}}<br>
+                        {{ form.lon(size=32) }}<br>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <a href="#" class="btn btn-success btn-icon-split">
+                <span class="icon text-white-50">
+                    <i class="fas fa-check"></i>
+                </span>
+                <span class="text">
+                    {{form.submit(class = "btn btn-success btn-icon-split")}}
+                </span>
+                {% for error in form.submit.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </a>
+        </div>
+        <br>
+        <br>
+        
+        <div class="row">
+            <div class="col-lg-7">
+            
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Fun fact: Environmental impact assessments </h6>
+                    </div>
+                    <div class="card-body">
+                        <p>Environmental Impact Assessment (EIA) is a systematic process used to identify, predict, evaluate, 
+                            and mitigate the potential environmental effects of proposed projects, plans, or policies. 
+                            The primary purpose of an EIA is to ensure that decision-makers, stakeholders, and the public 
+                            are informed about the likely environmental consequences of a proposed action before it is approved or implemented</p>
+                    
+
+                        <div class="my-2"></div>
+                        <a href="https://en.wikipedia.org/wiki/Environmental_impact_assessment" class="btn btn-light btn-icon-split">
+                            <span class="icon text-gray-600">
+                                <i class="fas fa-arrow-right"></i>
+                            </span>
+                            <span class="text">Find out more about EIA on wiki</span>
+                        </a>
+                        <div class="mb-4"></div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+{% endblock %}

@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class = "container-fluid">
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Welcome to the admin dashboard, here you can see everything &#x1F60E;</h1>
+</div>
+<div class="col-lg-6">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">All of the projects created by users</h6>
+        </div>
+        <div class="card-body">
+            <p>Explore created projects down below:</p>
+            {% for post in posts %}
+            {% include '_post.html' %}
+            {% endfor %}
+
+            {% if projects %}
+            <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+                <thead>
+                    <tr role="row"><th class="sorting sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending" style="width: 57.2px;">
+                        Project title</th><th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 61.2px;">
+                            Description</th><th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Office: activate to sort column ascending" style="width: 49.2px;">
+                                Lat</th><th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Lat: activate to sort column ascending" style="width: 30.2px;">
+                                    Lon</th><th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Start date: activate to sort column ascending" style="width: 68.2px;">
+                                        Date created</th><th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Salary: activate to sort column ascending" style="width: 66.2px;">
+                                        Project type</th></tr>
+                </thead>
+                {% for project in projects %}
+                {% include '_project.html' %}
+                {% endfor %}
+            </table>
+            {% else %}
+            <p> It seems that you still have no projects! Why don't you create one?</p>
+            {% endif %}
+            
+            {% if prev_url %}
+            <a href="{{ prev_url }}">Newer posts</a>
+            {% endif %}
+            {% if next_url %}
+            <a href="{{ next_url }}">Older posts</a>
+            <tfoot>
+                <tr><th rowspan="1" colspan="1">
+                    Project_title</th><th rowspan="1" colspan="1">
+                        Description</th><th rowspan="1" colspan="1">
+                            Lat</th><th rowspan="1" colspan="1">
+                                Lon</th><th rowspan="1" colspan="1">
+                                    Date created</th><th rowspan="1" colspan="1">
+                                        Project type</th></tr>
+            </tfoot>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+<div class="col-lg-6">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">
+                All of users
+            </h6>
+        </div>
+        <div class="card-body">
+            <p>See all available users/usernames created in this app</p>
+
+            <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+                {% for user in users %}
+                {% include '_user.html' %}
+                {% endfor %}
+            </table>
+            
+            {% if prev_url %}
+            <a href="{{ prev_url }}">Newer posts</a>
+            {% endif %}
+            {% if next_url %}
+            <a href="{{ next_url }}">Older posts</a>
+            <tfoot>
+                <tr><th rowspan="1" colspan="1">
+                    Project_title</th><th rowspan="1" colspan="1">
+                        Description</th><th rowspan="1" colspan="1">
+                            Lat</th><th rowspan="1" colspan="1">
+                                Lon</th><th rowspan="1" colspan="1">
+                                    Date created</th><th rowspan="1" colspan="1">
+                                        Project type</th></tr>
+            </tfoot>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+{% endblock %}

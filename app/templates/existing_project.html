@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div id = "content">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Update existing project</h1>
+    </div>
+    <div class="row">
+        <div class="col-lg-7">
+        <form action="" method="post">
+            {{ form.hidden_tag() }}
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        {{ form.project_title.label(size=32) }}
+                    </h6>
+                </div>
+                <div class="card-body">
+                    How do you want your project to be called?<br>
+                    {{ form.project_title(size=64) }}<br>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        {{ form.description.label(size=20) }}
+                    </h6>
+                </div>
+                <div class="card-body">
+                    What's the description and type of your project?<br>
+                    {{ form.description(size=32) }}<br>            
+                    {{ form.project_type.label }}<br>
+                    {{ form.project_type }}<br>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Location
+                    </h6>
+                </div>
+                <div class="card-body">
+                    What are the coordinates of your project?<br>
+                    {{ form.lat.label }}<br>
+                    {{ form.lat(size=32) }}<br>
+        
+                    {{ form.lon.label}}<br>
+                    {{ form.lon(size=32) }}<br>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class = "row">
+        <div class="col-lg-10">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        impact of the project
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {{project.impact}}
+                    {%if project.birds %}
+                    <p>The following species of birds would be endangered: </p>
+                    {% for bird in project.birds %}
+                        <i>{{bird.latin}}</i>
+                    {%endfor%}
+                    {%else%}
+                    <p>It seems that we could not find any endangered bird for your coordinates</p>
+                    {%endif%}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <a href="#" class="btn btn-success btn-icon-split">
+        <span class="icon text-white-50">
+            <i class="fas fa-check"></i>
+        </span>
+        <span class="text">
+            {{form.submit(class = "btn btn-success btn-icon-split")}}
+        </span>
+        {% for error in form.submit.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </a>
+
+    <a href="{{ url_for('new_project') }}" class="btn btn-secondary btn-icon-split">
+        <span class="icon text-white-50">
+            <i class="fas fa-arrow-right"></i>
+        </span>
+        <span class="text">Or create new project</span>
+    </a>
+
+    <a href="{{ url_for('delete_project', project_id = project.id) }}" class="btn btn-danger btn-icon-split">
+        <span class="icon text-white-50">
+            <i class="fas fa-trash"></i>
+        </span>
+        <span class="text">Delete existing project</span>
+    </a>
+
+    <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
+
+    <br>
+    <br>
+    <div class = "row">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Fun fact: Natura 2000 </h6>
+                </div>
+                <div class="card-body">
+                    <p>Natura 2000 is a network of protected areas in the European Union (EU) 
+                        established to conserve biodiversity and ensure the sustainable 
+                        use of natural resources. The network is a key element of the 
+                        EU's biodiversity policy and plays a crucial role in the 
+                        implementation of the Birds Directive and the Habitats Directive</p>
+                    <p>
+                        It represents a significant effort to address the decline in biodiversity 
+                        by establishing a comprehensive network of protected areas across Europe.
+                    </p>
+                
+                    <div class="my-2"></div>
+                    <a href="https://en.wikipedia.org/wiki/Natura_2000" class="btn btn-light btn-icon-split">
+                        <span class="icon text-gray-600">
+                            <i class="fas fa-arrow-right"></i>
+                        </span>
+                        <span class="text">Find out more about Natura 2000 on wiki</span>
+                    </a>
+                    <div class="mb-4"></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+
+{% endblock %}

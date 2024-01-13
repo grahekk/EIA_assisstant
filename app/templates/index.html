@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Hi, {{ current_user.username }}!</h1>
+<h1 class="h3 mb-4 text-gray-800">Do you want to see your impact on the environment?</h1>
+
+<div class="row">
+    <div class="col-lg-5">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary"> Let's get started</h6>
+            </div>
+            <div class="card-body">
+                <p> If you want to start your new project, click below!</p>
+                <a href="{{ url_for('new_project') }}" class="btn btn-primary btn-icon-split">
+                    <span class="icon text-white-50">
+                        <i class="fas fa-flag"></i>
+                    </span>
+                    <span class="text">Create your new project</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="col-xl-2 col-md-5 mb-5">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            Projects created</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{projects.count()}}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-comments fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-5">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Percentage of projects with
+                            impacts
+                        </div>
+                        <div class="row no-gutters align-items-center">
+                            <div class="col-auto">
+                                <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">50%</div>
+                            </div>
+                            <div class="col">
+                                <div class="progress progress-sm mr-2">
+                                    <div class="progress-bar bg-info" role="progressbar" style="width: 50%"
+                                        aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Your recent projects</h6>
+            </div>
+            <div class="card-body">
+                <p>Explore some of your latest projects down below:</p>
+                {% for post in posts %}
+                {% include '_post.html' %}
+
+
+                {% endfor %}
+
+                {% if projects %}
+                <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid"
+                    aria-describedby="dataTable_info" style="width: 100%;">
+                    <thead>
+                        <tr role="row">
+                            <th class="sorting sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1"
+                                colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending"
+                                style="width: 57.2px;">
+                                Project title</th>
+                            <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1"
+                                aria-label="Position: activate to sort column ascending" style="width: 61.2px;">
+                                Description</th>
+                            <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1"
+                                aria-label="Office: activate to sort column ascending" style="width: 49.2px;">
+                                Lat</th>
+                            <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1"
+                                aria-label="Lat: activate to sort column ascending" style="width: 30.2px;">
+                                Lon</th>
+                            <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1"
+                                aria-label="Start date: activate to sort column ascending" style="width: 68.2px;">
+                                Date created</th>
+                            <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1"
+                                aria-label="Salary: activate to sort column ascending" style="width: 66.2px;">
+                                Project type</th>
+                        </tr>
+                    </thead>
+                    {% for project in projects %}
+                    {% include '_project.html' %}
+                    {% endfor %}
+                </table>
+                {% else %}
+                <p> It seems that you still have no projects! Why don't you create one?</p>
+                {% endif %}
+
+                {% if prev_url %}
+                <a href="{{ prev_url }}">Newer posts</a>
+                {% endif %}
+                {% if next_url %}
+                <a href="{{ next_url }}">Older posts</a>
+                <tfoot>
+                    <tr>
+                        <th rowspan="1" colspan="1">
+                            Project_title</th>
+                        <th rowspan="1" colspan="1">
+                            Description</th>
+                        <th rowspan="1" colspan="1">
+                            Lat</th>
+                        <th rowspan="1" colspan="1">
+                            Lon</th>
+                        <th rowspan="1" colspan="1">
+                            Date created</th>
+                        <th rowspan="1" colspan="1">
+                            Project type</th>
+                    </tr>
+                </tfoot>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+    <!-- Pie Chart -->
+    <div class="col-xl-4 col-lg-5">
+        <div class="card shadow mb-4">
+            <!-- Card Header - Dropdown -->
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Impact of your projects in categories</h6>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body">
+                <div class="chart-pie pt-4 pb-2">
+                    <div class="chartjs-size-monitor">
+                        <div class="chartjs-size-monitor-expand">
+                            <div class=""></div>
+                        </div>
+                        <div class="chartjs-size-monitor-shrink">
+                            <div class=""></div>
+                        </div>
+                    </div>
+                    <canvas id="myPieChart" width="563" height="260"
+                        style="display: block; width: 451px; height: 208px;" class="chartjs-render-monitor"></canvas>
+                </div>
+                <div class="mt-4 text-center small">
+                    <span class="mr-2">
+                        <i class="fas fa-circle text-primary"></i> Direct
+                    </span>
+                    <span class="mr-2">
+                        <i class="fas fa-circle text-success"></i> Social
+                    </span>
+                    <span class="mr-2">
+                        <i class="fas fa-circle text-info"></i> Referral
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Social media</h6>
+            </div>
+            <div class="card-body">
+                <p>We have no facebook page or page you could find on Google whatsoever, but you can still go try search
+                    us there.
+                    Here you have the buttons to check it out. </p>
+                <a href="#" class="btn btn-google btn-block"><i class="fab fa-google fa-fw"></i>
+                    Find us on Google
+                </a>
+                <a href="#" class="btn btn-facebook btn-block"><i class="fab fa-facebook-f fa-fw"></i>
+                    Find us on Facebook
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Fun fact: Human impact on Environment </h6>
+            </div>
+            <div class="card-body">
+                <p>Humans impact the physical environment in many ways:
+                    overpopulation, pollution, burning fossil fuels, and deforestation.
+                    Changes like these have triggered climate change, soil erosion, poor air quality, and undrinkable
+                    water.
+                <p> Want to know more?
+                <div class="my-2"></div>
+                <a href="https://en.wikipedia.org/wiki/Human_impact_on_the_environment"
+                    class="btn btn-light btn-icon-split">
+                    <span class="icon text-gray-600">
+                        <i class="fas fa-arrow-right"></i>
+                    </span>
+                    <span class="text">Find out more about this topic on wiki</span>
+                </a>
+                <div class="mb-4"></div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-lg-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Our own blog</h6>
+            </div>
+            <div class="card-body">
+
+                {% if form %}
+                <form action="" method="post">
+                    {{ form.hidden_tag() }}
+                    <p>
+                        {{ form.post.label }}<br>
+                        {{ form.post(cols=32, rows=4) }}<br>
+                        {% for error in form.post.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                        {% endfor %}
+                    </p>
+                    <p>{{ form.submit() }}</p>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

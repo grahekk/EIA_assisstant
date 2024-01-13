@@ -1,0 +1,16 @@
+    <tbody>
+        
+        <tr class="odd">
+        <td>
+            <a href="{{ url_for('update_project', project_id = project.id) }}" class="text">
+                    {{ project.project_title}}
+            </a>
+        </td>
+        <td>{{ project.description }}</td>
+        <td>{{ project.lat }}</td>
+        <td>{{ project.lon }}</td>
+        <td>{{ project.date_created }}</td>
+        <td>{{ project.project_type }}</td>
+        </tr>
+    </tbody>
+

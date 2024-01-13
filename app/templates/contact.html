@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class = "container-fluid">
+
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Contact &#x1F9D0;</h1>
+    </div>
+    <div class="col-lg-6">
+        <form action="" method="post">
+            {{ form.hidden_tag() }}
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Write use a message!
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p><i>
+                        This actually doesn't function cause we're lazy to complete it, but we wish you good luck with filling this form
+                    </i>
+                    </p>
+
+                    <p>
+                        {{ form.username.label }}<br>
+                        {{ form.username(size=32) }}<br>
+                        {% for error in form.username.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                        {% endfor %}
+                    </p>
+                    <p>
+                        {{ form.title.label }}<br>
+                        {{ form.title(cols=5, rows=4) }}<br>
+                        {% for error in form.title.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                        {% endfor %}
+                    </p>
+                    <p>
+                        {{ form.text_message.label }}<br>
+                        {{ form.text_message(cols=50, rows=4) }}<br>
+                        {% for error in form.text_message.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                        {% endfor %}
+                    </p>
+
+                    <a href="#" class="btn btn-success btn-icon-split">
+                        <span class="icon text-white-50">
+                            <i class="fas fa-check"></i>
+                        </span>
+                        <span class="text">
+                            {{form.submit(class = "btn btn-success btn-icon-split")}}
+                        </span>
+                        {% for error in form.submit.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                        {% endfor %}
+                    </a>
+                </div>
+            </div>
+        </div>
+{% endblock %}
