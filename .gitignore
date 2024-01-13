@@ -60,6 +60,7 @@ cover/
 # Flask stuff:
 instance/
 .webassets-cache
+static/
 
 # Scrapy stuff:
 .scrapy
