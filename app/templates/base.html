@@ -33,6 +33,7 @@
     <div id="wrapper">
         {% include "navbar_vertical.html" %}
         <div id="content-wrapper" class="d-flex flex column">
+            {% if current_user.is_authenticated %}
             <div id="content">
             {% include "navbar_horizontal.html" %}
                 <div class="container-fluid">
@@ -46,7 +47,7 @@
                     </ul>
                     {% endif %}
                     {% endwith %}
-
+                    
                     {% block content %}{% endblock %}
                 </div>
                 
@@ -57,8 +58,9 @@
                         </div>
                     </div>
                 </footer>
-
+                
             </div>
+            {% endif %}
         </div>
     </div>
         
