@@ -1,4 +1,4 @@
-from app import db, login
+from app import db, login, config
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
@@ -6,8 +6,38 @@ from hashlib import md5
 from .repository import natura_impact_assessment, check_intersection
 from geoalchemy2 import Geometry
 from shapely.geometry import Point
-from sqlalchemy import func
+from sqlalchemy import func, create_engine, MetaData, Table, Column
+from sqlalchemy.orm import sessionmaker
+import pyproj
+from shapely.ops import transform
 
+
+engine = create_engine(config['SQLALCHEMY_DATABASE_URI'])
+metadata_obj = MetaData(schema="data")
+Session = sessionmaker(bind=engine)
+session = Session()
+
+birds_table = Table("Uredba_NN8019_3_Identifikacijski", 
+                        metadata_obj,
+                        autoload_with = engine)
+
+natura_habitats = Table("povs", 
+                        metadata_obj,
+                        Column("geom", Geometry('POLYGON')),
+                        autoload_with = engine)
+
+natura_birds = Table("pop", 
+                    metadata_obj,
+                    Column("geom", Geometry('POLYGON')),
+                    autoload_with = engine)
+
+def check_povs(data):
+    site_code = session.query(natura_habitats.c.sitecode).filter(natura_habitats.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
+    return site_code
+
+def check_pop(data):
+    site_code = session.query(natura_birds.c.sitecode).filter(natura_birds.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
+    return site_code[0]
 
 followers = db.Table('followers',
     db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
@@ -95,6 +125,8 @@ class Project(db.Model):
         self.project_type = project_type
         self.lat = lat
         self.lon = lon
+        self.create_point(self.lat, self.lon)
+
         self.user_id = user_id
         self.assess_impact()
         self.query_birds()
@@ -105,17 +137,32 @@ class Project(db.Model):
         return self.impact
     
     def query_birds(self):
-        sitecode = check_intersection(self.lat, self.lon)
-        self.birds = Birds.query.filter_by(code=sitecode).all()
+        point = self.create_point(self.lat, self.lon)
+        site_code = check_pop(point)
+        self.birds = session.query(birds_table.c.latin).filter_by(code=site_code[0]).all()
         return self.birds
+    
+    def query_povs(self):
+        site_code = check_povs(self.point)
+    
+    def create_point(self, lat, lon):
+        # Create a Point object with the given latitude and longitude
+        point = Point(lon, lat)
 
+        # Define the target CRS (EPSG:4326)
+        target_crs = pyproj.CRS.from_epsg(4326)
 
-class Birds(db.Model):
-    __tablename__ = 'birds'
-    id = db.Column(db.Integer, primary_key=True)
-    code = db.Column(db.String)
-    name = db.Column(db.String)
-    latin = db.Column(db.String)
+        # Define the source CRS (EPSG:4326)
+        source_crs = pyproj.CRS.from_epsg(4326)
+
+        # Create a transformer to convert coordinates to the target CRS
+        transformer = pyproj.Transformer.from_crs(source_crs, target_crs, always_xy=True)
+
+        # Transform the Point object to the target CRS
+        transformed_point = transform(transformer.transform, point)
+
+        return point
+
 
 
 @login.user_loader
