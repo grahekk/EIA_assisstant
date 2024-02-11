@@ -127,7 +127,7 @@ cython_debug/
 .idea/
 .vscode
 
-# shapefiles
+# shapefiles, other files
 *.shp
 *.shx
 *.cpg
@@ -139,3 +139,4 @@ cython_debug/
 *.geojson
 *.gml
 *.csv
+*.docx
