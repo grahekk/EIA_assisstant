@@ -1,6 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
+
+<!-- Leaflet map for this template-->
+<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='leaflet/leaflet.css') }}"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<script src="{{ url_for('static',filename='leaflet/leaflet.js') }}"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+
 <div class = "container-fluid">
 
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
@@ -51,11 +59,27 @@
                         <p>What are the coordinates of your project? </p>
                         <p> *Advice* it is very advisable to choose somewhere in Croatia - therefore lat would be around 45 and lon would be between 14 and 16,
                         if you're not sure where to click, <a href="https://www.bioportal.hr/gis/"> see here </a> where you could potentially put your project </p>
-                        {{ form.lat.label }}<br>
-                        {{ form.lat(size=32) }}<br>
+                        {{ form.lat.label }}
+                        {{ form.lat(size=32) }}
            
-                        {{ form.lon.label}}<br>
-                        {{ form.lon(size=32) }}<br>
+                        {{ form.lon.label}}
+                        {{ form.lon(size=32) }}
+                        <div class="my-2"></div>
+
+                        <a href="" class="btn btn-light btn-icon-split">
+                            <span class="icon text-gray-600">
+                                <i class="fas fa-arrow-right"></i>
+                            </span>
+                            <button class="btn btn-light btn-icon-split" onclick="updateMap()"> 
+                                <span class="text">Update map</span>
+
+                            </button>
+                        </a>
+                        <div class="my-1"></div>
+
+                        <br>
+                        {% include '_leaflet.html' %}
+
                     </div>
                 </div>
             </div>
