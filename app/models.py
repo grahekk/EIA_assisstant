@@ -140,7 +140,13 @@ class Project(db.Model):
         point = self.create_point(self.lat, self.lon)
         site_code = check_pop(point)
         self.birds = session.query(birds_table.c.latin).filter_by(code=site_code[0]).all()
-        return self.birds
+        birds_list = []
+
+        for bird in self.birds:
+            bird = bird[0]
+            birds_list.append(bird)
+        
+        return birds_list
     
     def query_povs(self):
         site_code = check_povs(self.point)
