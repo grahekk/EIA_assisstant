@@ -70,7 +70,6 @@
         </div>
     </div>
 </div>
-
 <div class="row">
     <div class="col-lg-8">
         <div class="card shadow mb-4">
@@ -79,11 +78,6 @@
             </div>
             <div class="card-body">
                 <p>Explore some of your latest projects down below:</p>
-                {% for post in posts %}
-                {% include '_post.html' %}
-
-
-                {% endfor %}
 
                 {% if projects %}
                 <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid"
@@ -226,30 +220,6 @@
         </div>
     </div>
 
-
-    <div class="col-lg-6">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Our own blog</h6>
-            </div>
-            <div class="card-body">
-
-                {% if form %}
-                <form action="" method="post">
-                    {{ form.hidden_tag() }}
-                    <p>
-                        {{ form.post.label }}<br>
-                        {{ form.post(cols=32, rows=4) }}<br>
-                        {% for error in form.post.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
-                        {% endfor %}
-                    </p>
-                    <p>{{ form.submit() }}</p>
-                </form>
-                {% endif %}
-            </div>
-        </div>
-    </div>
 </div>
 
 {% endblock %}
