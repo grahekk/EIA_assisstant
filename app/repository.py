@@ -2,6 +2,7 @@ from app import db
 import geopandas as gpd, fiona
 from shapely.geometry import Point
 import pyproj
+from docx import Document
 
 fiona.drvsupport.supported_drivers['kml'] = 'rw' 
 fiona.drvsupport.supported_drivers['KML'] = 'rw' 
@@ -67,6 +68,19 @@ def natura_impact_assessment(lat, lon, project_title, project_type):
             Consideration of these factors is vital for sustainable development, ensuring that the project minimizes its ecological footprint and preserves biodiversity."""
             
     return text
+
+def create_report(proj_name, text, output_path):
+    # Create a new Word document
+    doc = Document()
+
+    # Add a title with the project name
+    doc.add_heading(proj_name, level=1)
+
+    # Add the text content to the document
+    doc.add_paragraph(text)
+
+    # Save the document to the specified output path
+    doc.save(output_path)
 
 
 if __name__ == "__main__":

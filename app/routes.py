@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, send_file
 from flask_login import current_user, login_user, logout_user, login_required
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, PostForm, EmptyForm, ContactForm, NewProjectForm, EditProjectForm, DeleteProjectForm
@@ -7,6 +7,10 @@ from sqlalchemy.sql import text
 
 from datetime import datetime
 from urllib.parse import urlsplit
+
+from .repository import create_report
+import tempfile
+import os
 
 @app.before_request
 def before_request():
@@ -266,3 +270,14 @@ def dashboard():
 @app.errorhandler(404)
 def not_found(e):
     return render_template('404.html'), 404
+
+
+@login_required
+@app.route('/update_project/download_report/<project_id>', methods=['GET', 'POST'])
+def download_report(project_id):
+    project = Project.query.filter_by(id=project_id).first_or_404()
+    project.birds = project.query_birds()
+    report = "report.docx"
+    # TODO: do the temporary directory for storing reports (tempfile)
+    create_report(project.project_title, project.impact + " ".join(project.birds), report)
+    return send_file(os.path.abspath(report))
