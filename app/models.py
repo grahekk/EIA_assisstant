@@ -3,7 +3,7 @@ from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from hashlib import md5
-from .repository import natura_impact_assessment, check_intersection
+from .repository import natura_impact_assessment, natura_description
 from geoalchemy2 import Geometry
 from shapely.geometry import Point
 from sqlalchemy import func, create_engine, MetaData, Table, Column
@@ -36,8 +36,8 @@ def check_povs(data):
     return site_code
 
 def check_pop(data):
-    site_code = session.query(natura_birds.c.sitecode).filter(natura_birds.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
-    return site_code[0]
+    site_code = session.query(natura_birds.c.sitecode, natura_birds.c.sitename).filter(natura_birds.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
+    return site_code
 
 followers = db.Table('followers',
     db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
@@ -128,35 +128,46 @@ class Project(db.Model):
         self.create_point(self.lat, self.lon)
 
         self.user_id = user_id
+        self.query_birds_table()
+        self.get_description()
         self.assess_impact()
-        self.query_birds()
         super().__init__()
+
+    def get_description(self):
+        self.description = natura_description(self.project_title, self.site_code, self.site_name, distance = 5, intersection=True)
+        return self.description
 
     def assess_impact(self):
         self.impact = natura_impact_assessment(self.lat, self.lon, self.project_title, self.project_type)
         return self.impact
     
-    def query_birds(self):
-        point = self.create_point(self.lat, self.lon)
-        site_code = check_pop(point)
-        self.birds = session.query(birds_table.c.latin).filter_by(code=site_code[0]).all()
-        birds_list = []
+    # def query_birds(self):
+    #     point = self.create_point(self.lat, self.lon)
+    #     self.site_code = check_pop(point)[0]
+    #     self.birds = session.query(birds_table.c.latin).filter_by(code=self.site_code).all()
+    #     birds_list = []
 
-        for bird in self.birds:
-            bird = bird[0]
-            birds_list.append(bird)
+    #     for bird in self.birds:
+    #         bird = bird[0]
+    #         birds_list.append(bird)
         
-        return birds_list
+    #     return birds_list
     
     def query_birds_table(self):
         point = self.create_point(self.lat, self.lon)
-        site_code = check_pop(point)
-        self.birds = session.query(birds_table.c.latin, birds_table.c.croatian, birds_table.c.Status_G, birds_table.c.Status_P, birds_table.c.Status_Z).filter_by(code=site_code[0]).all()
+        self.site_code = check_pop(point)[0]
+        self.site_name = check_pop(point)[1]
+        self.birds = session.query(birds_table.c.latin, 
+                                   birds_table.c.croatian, 
+                                   birds_table.c.Status_G, 
+                                   birds_table.c.Status_P, 
+                                   birds_table.c.Status_Z).filter_by(code=self.site_code).all()
         
         return self.birds
     
     def query_povs(self):
-        site_code = check_povs(self.point)
+        self.site_code = check_povs(self.point)
+        return self.site_code
     
     def create_point(self, lat, lon):
         # Create a Point object with the given latitude and longitude

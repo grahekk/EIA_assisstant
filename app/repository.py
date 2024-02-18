@@ -11,12 +11,11 @@ import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
 
 
-
-fiona.drvsupport.supported_drivers['kml'] = 'rw' 
-fiona.drvsupport.supported_drivers['KML'] = 'rw' 
-fiona.drvsupport.supported_drivers['LIBKML'] = 'rw'
-fiona.drvsupport.supported_drivers['libkml'] = 'rw'
-fiona.drvsupport.supported_drivers['GPKG'] = 'rw'
+# fiona.drvsupport.supported_drivers['kml'] = 'rw' 
+# fiona.drvsupport.supported_drivers['KML'] = 'rw' 
+# fiona.drvsupport.supported_drivers['LIBKML'] = 'rw'
+# fiona.drvsupport.supported_drivers['libkml'] = 'rw'
+# fiona.drvsupport.supported_drivers['GPKG'] = 'rw'
 
 
 def transform_coordinates(lat, lon, from_epsg=4326, to_epsg=3765):
@@ -93,6 +92,7 @@ def natura_description(project_title, site_code, site_name, distance, intersecti
                     ."""                
     return text
 
+
 def apply_table_style(table):
     # Apply a built-in table style
     table.style = 'Table Grid'
@@ -111,7 +111,7 @@ def apply_table_style(table):
                 tc.attrib.clear()
             
 
-def create_report(proj_name, text, table_data, image_path, output_path, merge_column=1):
+def create_report_docx(proj_name, text, table_data, image_path, output_path, merge_column=1):
     # Create a new Word document
     doc = Document()
 
@@ -191,6 +191,43 @@ def merge_cells_in_column(table, column_index):
                 # Update the set of merged cells
                 merged_cells.add(value)
 
+
+def generate_md_document(title, heading, paragraph, table, table_name, image, image_description, source):
+    md_content = f"# {title}\n\n"
+
+    # Heading
+    md_content += f"## {heading}\n\n"
+
+    # Paragraph
+    md_content += f"{paragraph}\n\n"
+
+    # Table
+    md_content += f"Table: {table_name} \n"
+    md_content += "| Header 1 | Header 2 |\n"
+    md_content += "| -------- | -------- |\n"
+    for row in table:
+        md_content += f"| {row[0]} | {row[1]} |\n"
+    md_content += "\n"
+
+    # Image
+    md_content += f"![{image_description}]({image})\n\n"
+
+    # Source as footnote
+    md_content += f"Source: {source}[^1]\n\n"
+
+    # Footnote
+    md_content += "[^1]: Source details go here\n"
+
+    return md_content
+
+
+def create_report():
+    chapter = "Natura"
+    md_content = generate_md_document()
+    with open("output.md", "w") as md_file:
+        md_file.write(md_content)
+
+    # TODO: convert_md_to_docx()
 
 if __name__ == "__main__":
 

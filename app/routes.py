@@ -9,7 +9,7 @@ from datetime import datetime
 from urllib.parse import urlsplit
 
 from .plot_map import export_map_with_shapefile
-from .repository import create_report
+from .repository import generate_md_document
 import tempfile
 import os
 
@@ -277,11 +277,20 @@ def not_found(e):
 @app.route('/update_project/download_report/<project_id>', methods=['GET', 'POST'])
 def download_report(project_id):
     project = Project.query.filter_by(id=project_id).first_or_404()
+    #get table
     project.birds = project.query_birds_table()
+    #get shape for map
     pop_gdf = project.get_geodataframe_for_point()
+    # create map image for report
     image_path = "map_image.jpg"
     export_map_with_shapefile(project.lat, project.lon, gdf = pop_gdf, file_path = image_path)
     report = "report.docx"
     # TODO: do the temporary directory for storing reports (tempfile)
+    #create report
     create_report(project.project_title, project.impact, project.birds, image_path, report)
+
+    md_content = generate_md_document(project.project_title, "")
+    with open("output.md", "w") as md_file:
+        md_file.write(md_content)
+
     return send_file(os.path.abspath(report))
