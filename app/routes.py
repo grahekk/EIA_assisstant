@@ -8,6 +8,7 @@ from sqlalchemy.sql import text
 from datetime import datetime
 from urllib.parse import urlsplit
 
+from .plot_map import export_map_with_shapefile
 from .repository import create_report
 import tempfile
 import os
@@ -256,7 +257,7 @@ def delete_project(project_id):
 
     elif request.method == 'GET':    
         return render_template('delete_project.html', title='Delete project',
-                            form=project_form, project = project)   
+                            form=project_form, project = project)
     
 @login_required
 @app.route('/admin_dashboard', methods=['GET', 'POST'])
@@ -276,8 +277,11 @@ def not_found(e):
 @app.route('/update_project/download_report/<project_id>', methods=['GET', 'POST'])
 def download_report(project_id):
     project = Project.query.filter_by(id=project_id).first_or_404()
-    project.birds = project.query_birds()
+    project.birds = project.query_birds_table()
+    pop_gdf = project.get_geodataframe_for_point()
+    image_path = "map_image.jpg"
+    export_map_with_shapefile(project.lat, project.lon, gdf = pop_gdf, file_path = image_path)
     report = "report.docx"
     # TODO: do the temporary directory for storing reports (tempfile)
-    create_report(project.project_title, project.impact + " ".join(project.birds), report)
+    create_report(project.project_title, project.impact, project.birds, image_path, report)
     return send_file(os.path.abspath(report))

@@ -10,7 +10,7 @@ from sqlalchemy import func, create_engine, MetaData, Table, Column
 from sqlalchemy.orm import sessionmaker
 import pyproj
 from shapely.ops import transform
-
+import geopandas as gpd
 
 engine = create_engine(config['SQLALCHEMY_DATABASE_URI'])
 metadata_obj = MetaData(schema="data")
@@ -148,6 +148,13 @@ class Project(db.Model):
         
         return birds_list
     
+    def query_birds_table(self):
+        point = self.create_point(self.lat, self.lon)
+        site_code = check_pop(point)
+        self.birds = session.query(birds_table.c.latin, birds_table.c.croatian, birds_table.c.Status_G, birds_table.c.Status_P, birds_table.c.Status_Z).filter_by(code=site_code[0]).all()
+        
+        return self.birds
+    
     def query_povs(self):
         site_code = check_povs(self.point)
     
@@ -169,7 +176,23 @@ class Project(db.Model):
 
         return point
 
+    def get_geodataframe_for_point(self):
+        # Define the query to retrieve data within 5 kilometers of the given point
+        query = f"""
+            SELECT ST_GeometryN(geom, generate_series(1, ST_NumGeometries(geom))) AS geom_polygon
+            FROM data.pop
+            WHERE ST_DWithin(
+                geom,
+                ST_Transform(ST_SetSRID(ST_MakePoint(15.73, 45.61), 4326),3765),
+                5000
+            )
+            LIMIT 5;
+        """
 
+        # Use geopandas to read the data from the database into a GeoDataFrame
+        gdf = gpd.read_postgis(query, session.bind, geom_col='geom_polygon', crs = 3765)
+
+        return gdf
 
 @login.user_loader
 def load_user(id):
