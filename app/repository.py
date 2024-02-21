@@ -5,7 +5,8 @@ import pyproj
 from docx import Document
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from docx.shared import Pt, Inches
-from docx.oxml import OxmlElement, ns
+import markdown2
+import pypandoc
 
 import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
@@ -51,26 +52,25 @@ def check_intersection(lat, lon):
 def natura_impact_assessment(lat, lon, project_title, project_type):
 #     bird_data = "birds.csv"
 #     bird_data = query_points_within_polygon(lat, lon)
-    text = f"""<p>{project_title} is situated at the location {lat}, {lon}.</p>
-           <p> As a {project_type} development project, it is crucial to consider the potential environmental impacts.</p>
-           <br> 
-           <p> The project could have significant effects on the local ecosystem, including wildlife and bird populations. Some of the potential impacts are:
+    text = f"""Project named '{project_title}' is situated at the location {lat}, {lon}.
+           As a {project_type} development project, it is crucial to consider the potential environmental impacts.
+           
+           The project could have significant effects on the local ecosystem, including wildlife and bird populations. 
+           Some of the potential impacts are:
             
-            1. **Habitat Destruction:** The development may lead to the destruction of natural habitats, affecting the local flora and fauna.
+            1. Habitat Destruction: The development may lead to the destruction of natural habitats, affecting the local flora and fauna.
             
-            2. **Disruption of Wildlife Migration:** If the project is located along migration routes, it could disrupt the natural migration patterns of birds and other animals.
+            2. Disruption of Wildlife Migration: If the project is located along migration routes, it could disrupt the natural migration patterns of birds and other animals.
             
-            3. **Noise Pollution:** Construction activities can contribute to noise pollution, which may disturb bird species that rely on acoustic signals for communication and navigation.
+            3. Noise Pollution: Construction activities can contribute to noise pollution, which may disturb bird species that rely on acoustic signals for communication and navigation.
             
-            4. **Air and Water Pollution:** Depending on the nature of the project, there might be emissions and runoff that can contaminate the air and water, impacting both terrestrial and aquatic bird species.
+            4. Air and Water Pollution: Depending on the nature of the project, there might be emissions and runoff that can contaminate the air and water, impacting both terrestrial and aquatic bird species.
             
-            5. **Collision Risks:** Tall structures such as towers or wind turbines pose a collision risk for birds. It's essential to assess and mitigate these risks to protect bird populations.
+            5. Collision Risks: Tall structures such as towers or wind turbines pose a collision risk for birds. It's essential to assess and mitigate these risks to protect bird populations.
             
-            6. **Introduction of Invasive Species:** Construction activities may introduce invasive species that could outcompete or prey on local bird species.
+            6. Introduction of Invasive Species: Construction activities may introduce invasive species that could outcompete or prey on local bird species.
             
             It's crucial to refer to available environmental impact assessments and conduct thorough studies to minimize negative consequences. The following bird species have been identified in the wider area of the project location based on available data in:
-
-            [List of bird species and relevant data from the CSV file]
 
             Consideration of these factors is vital for sustainable development, ensuring that the project minimizes its ecological footprint and preserves biodiversity."""
             
@@ -221,13 +221,37 @@ def generate_md_document(title, heading, paragraph, table, table_name, image, im
     return md_content
 
 
-def create_report():
+def create_report(title, paragraph, table, image, output):
     chapter = "Natura"
-    md_content = generate_md_document()
-    with open("output.md", "w") as md_file:
-        md_file.write(md_content)
+    table_name = "Table 1: species on location of project\n"
+    image_description = "Image 1: map of location of project\n"
+    source = "https://www.haop.hr/hr/tematska-podrucja/odrzivo-koristenje-prirodnih-dobara-i-ekoloska-mreza/ekoloska-mreza\n"
 
-    # TODO: convert_md_to_docx()
+    md_content = generate_md_document(title, chapter, paragraph, table, table_name, image, image_description, source)
+
+    md_path = "output.md"
+    with open(md_path, "w", encoding="utf-8") as md_file:
+        md_file.write(md_content)
+        
+    md_to_docx(md_path, output)
+
+
+def md_to_docx(md_file, docx_file):
+    # Read the Markdown content from the file
+    with open(md_file, 'r', encoding='utf-8') as md_file:
+        md_content = md_file.read()
+
+    # Convert Markdown to HTML, then html to docx
+    html_content = markdown2.markdown(md_content, extras=['tables', 'footnotes'])
+    with open("temporary_html_report.html", 'w', encoding='utf-8') as html_file:
+        html_file.write(html_content)
+
+    pypandoc.convert_text(html_content, to = "docx", format="html", outputfile=docx_file)
+
+
+def report_knit(file_to_knit, output, format = 'docx'):
+    pypandoc.convert_file(file_to_knit, to = format, outputfile=output)
+
 
 if __name__ == "__main__":
 

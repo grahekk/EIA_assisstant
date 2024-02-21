@@ -9,7 +9,7 @@ from datetime import datetime
 from urllib.parse import urlsplit
 
 from .plot_map import export_map_with_shapefile
-from .repository import generate_md_document
+from .repository import create_report
 import tempfile
 import os
 
@@ -236,7 +236,7 @@ def update_project(project_id):
         project_form.lon.data = project.lon
         project.impact = project.assess_impact()
         project_form.impact = project.impact
-        project.birds = project.query_birds()
+        project.birds = project.query_birds_table()
 
     return render_template('existing_project.html', title='Update project',
                         form=project_form, project = project)   
@@ -287,10 +287,11 @@ def download_report(project_id):
     report = "report.docx"
     # TODO: do the temporary directory for storing reports (tempfile)
     #create report
-    create_report(project.project_title, project.impact, project.birds, image_path, report)
+    create_report(project.project_title, 
+                  project.impact, 
+                  project.birds,
+                  image_path, 
+                  report)
 
-    md_content = generate_md_document(project.project_title, "")
-    with open("output.md", "w") as md_file:
-        md_file.write(md_content)
 
     return send_file(os.path.abspath(report))

@@ -155,8 +155,8 @@ class Project(db.Model):
     
     def query_birds_table(self):
         point = self.create_point(self.lat, self.lon)
-        self.site_code = check_pop(point)[0]
-        self.site_name = check_pop(point)[1]
+        self.site_code = check_pop(point)[0][0]
+        self.site_name = check_pop(point)[0][1]
         self.birds = session.query(birds_table.c.latin, 
                                    birds_table.c.croatian, 
                                    birds_table.c.Status_G, 
