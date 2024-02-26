@@ -12,6 +12,17 @@ from .plot_map import export_map_with_shapefile
 from .repository import create_report
 import tempfile
 import os
+import yaml
+
+# Load YAML data
+with open('templates.yaml', 'r') as file:
+    templates = yaml.safe_load(file)
+
+# Add templates to the context
+@app.context_processor
+def inject_templates():
+    return dict(templates=templates)
+
 
 @app.before_request
 def before_request():
@@ -237,6 +248,11 @@ def update_project(project_id):
         project.impact = project.assess_impact()
         project_form.impact = project.impact
         project.birds = project.query_birds_table()
+
+        # Get the template from YAML
+        template = templates.get('project_location', '')
+        # Substitute placeholders with actual values
+        result_text = template.format(project=project.project_title, lat=project.lat, lon=project.lon)
 
     return render_template('existing_project.html', title='Update project',
                         form=project_form, project = project)   
