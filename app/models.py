@@ -152,7 +152,8 @@ class Project(db.Model):
     #         birds_list.append(bird)
         
     #     return birds_list
-    
+    # TODO: Async query all the attributes!!
+    # query outside of this class?
     def query_birds_table(self):
         point = self.create_point(self.lat, self.lon)
         self.site_code = check_pop(point)[0][0]

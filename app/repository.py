@@ -191,7 +191,12 @@ def merge_cells_in_column(table, column_index):
                 # Update the set of merged cells
                 merged_cells.add(value)
 
-
+# TODO:
+# generate chapters in a loop
+# chapter should be Chapter class - it contains paragraph, tables, image paths, sources
+# loop iterates over list of objects. 
+# Each object should representate, "unpack" or print (repr) in chapter in it's specific way
+                
 def generate_md_document(title, heading, paragraph, table, table_name, image, image_description, source):
     md_content = f"# {title}\n\n"
 
