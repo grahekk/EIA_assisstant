@@ -15,7 +15,7 @@ import os
 import yaml
 
 # Load YAML data
-with open('templates.yaml', 'r') as file:
+with open('app/text_templates.yaml', 'r') as file:
     templates = yaml.safe_load(file)
 
 # Add templates to the context

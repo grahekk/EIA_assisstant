@@ -1,1 +1,17 @@
 project_location: "The project {project} is located at {lat}, {lon} location."
+
+habitats: "The {name} habitat is located at {lat}, {lon} coordinates."
+
+rivers: "The {name} river is {distance} away from the project location."
+
+water_bodies: "A {type} water body named {name} is {distance} from the project location."
+
+protected_areas: "The protected area '{name}' of category '{category}' is {distance} away."
+
+natura2000_habitats: "The Natura 2000 habitat '{name}' with code '{code}' is {distance} away."
+
+natura2000_birds: "The Natura 2000 bird '{name}' with code '{code}' is {distance} away."
+
+forest_stands: "A {type} forest stand in the '{forest_unit}' unit, owned by '{ownership}', is {distance} away."
+
+administrative: "The town named {town_name} is part of the project location."
