@@ -31,6 +31,67 @@ natura_birds = Table("pop",
                     Column("geom", Geometry('POLYGON')),
                     autoload_with = engine)
 
+cro_administrative_opcine_gradovi_3765 = Table("cro_administrative_opcine_gradovi_3765", 
+                    metadata_obj,
+                    Column("geom", Geometry('POLYGON')),
+                    autoload_with = engine)
+
+cro_bio_bentos_3765 = Table("cro_bio_bentos_3765", 
+                    metadata_obj,
+                    Column("geom", Geometry('POLYGON')),
+                    autoload_with = engine)
+
+cro_bio_habitats_2004_3765 = Table("cro_bio_habitats_2004_3765", 
+                    metadata_obj,
+                    Column("geom", Geometry('POLYGON')),
+                    autoload_with = engine)
+
+cro_bio_habitats_2016_3765 = Table("cro_bio_habitats_2016_3765", 
+                    metadata_obj,
+                    Column("geom", Geometry('POLYGON')),
+                    autoload_with = engine)
+
+cro_bio_mab_3765 = Table("cro_bio_mab_3765", 
+                    metadata_obj,
+                    Column("geom", Geometry('POLYGON')),
+                    autoload_with = engine)
+
+cro_bio_zpp_points_3765 = Table("cro_bio_zpp_points_3765", 
+                    metadata_obj,
+                    Column("geom", Geometry('POLYGON')),
+                    autoload_with = engine)
+
+cro_bio_zpp_polygons_3765 = Table("cro_bio_zpp_polygons_3765", 
+                    metadata_obj,
+                    Column("geom", Geometry('POLYGON')),
+                    autoload_with = engine)
+
+cro_forest_private_gj_3765 = Table("cro_forest_private_gj_3765", 
+                    metadata_obj,
+                    Column("geom", Geometry('POLYGON')),
+                    autoload_with = engine)
+
+cro_forest_private_unit_3765 = Table("cro_forest_private_unit_3765", 
+                    metadata_obj,
+                    Column("geom", Geometry('POLYGON')),
+                    autoload_with = engine)
+
+esri_water_bodies_3765 = Table("esri_water_bodies_3765", 
+                    metadata_obj,
+                    Column("geom", Geometry('POLYGON')),
+                    autoload_with = engine)
+
+osm_rivers_lines_3765 = Table("osm_rivers_lines_3765", 
+                    metadata_obj,
+                    Column("geom", Geometry('POLYGON')),
+                    autoload_with = engine)
+
+osm_rivers_polygons_3765 = Table("osm_rivers_polygons_3765", 
+                    metadata_obj,
+                    Column("geom", Geometry('POLYGON')),
+                    autoload_with = engine)
+
+
 def check_povs(data):
     site_code = session.query(natura_habitats.c.sitecode).filter(natura_habitats.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
     return site_code
@@ -38,6 +99,51 @@ def check_povs(data):
 def check_pop(data):
     site_code = session.query(natura_birds.c.sitecode, natura_birds.c.sitename).filter(natura_birds.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
     return site_code
+
+def get_administrative_cro(data):
+    administrative = session.query(cro_administrative_opcine_gradovi_3765.c.shapename).filter(cro_administrative_opcine_gradovi_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).one_or_none()
+    return administrative
+
+def get_habitats_2004(data):
+    habitats = session.query(cro_bio_habitats_2004_3765.c.nks_kod, cro_bio_habitats_2004_3765.c.nks_ime).filter(cro_bio_habitats_2004_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
+    return habitats
+
+def get_habitats_2016(data):
+    habitats = session.query(cro_bio_habitats_2016_3765.c.nks1, cro_bio_habitats_2016_3765.c.nks1_naziv).filter(cro_bio_habitats_2016_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
+    return habitats
+
+def get_mab_cro(data):
+    mab = session.query(cro_bio_mab_3765.c.naziv, cro_bio_mab_3765.c.zona).filter(cro_bio_mab_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).one()
+    return mab
+
+def get_zpp_points(data):
+    result = session.query(cro_bio_zpp_points_3765.c.kategorija, cro_bio_zpp_points_3765.c.naziv_akt, func.ST_Distance(cro_bio_zpp_points_3765.c.geom, func.ST_Transform(data.wkt, 3765)).label('distance')).filter(cro_bio_zpp_points_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
+    return result
+
+def get_zpp_polygons(data):
+    result = session.query(cro_bio_zpp_polygons_3765.c.kategorija, cro_bio_zpp_polygons_3765.c.naziv_akt, func.ST_Distance(cro_bio_zpp_polygons_3765.c.geom, func.ST_Transform(data.wkt, 3765)).label('distance')).filter(cro_bio_zpp_polygons_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
+    return result
+
+def get_forest_private_gj(data):
+    result = session.query(cro_forest_private_gj_3765.c.ngj, cro_forest_private_gj_3765.c.gj, func.ST_Distance(cro_forest_private_gj_3765.c.geom, func.ST_Transform(data.wkt, 3765)).label('distance')).filter(cro_forest_private_gj_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
+    return result
+
+def get_forest_private_unit(data):
+    result = session.query(cro_forest_private_unit_3765.c.odjel, cro_forest_private_unit_3765.c.odsjek, cro_forest_private_unit_3765.c.povrsina, func.ST_Distance(cro_forest_private_unit_3765.c.geom, func.ST_Transform(data.wkt, 3765)).label('distance')).filter(cro_forest_private_unit_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
+    return result
+
+def get_esri_water_bodies(data):
+    result = session.query(esri_water_bodies_3765.c.name1, esri_water_bodies_3765.c.type, func.ST_Distance(esri_water_bodies_3765.c.geom, func.ST_Transform(data.wkt, 3765)).label('distance')).filter(esri_water_bodies_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
+    return result
+
+def get_osm_rivers_lines(data):
+    result = session.query(osm_rivers_lines_3765.c.name, osm_rivers_lines_3765.c.waterway, func.ST_Distance(osm_rivers_lines_3765.c.geom, func.ST_Transform(data.wkt, 3765)).label('distance')).filter(osm_rivers_lines_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
+    return result
+
+def get_osm_rivers_polygons(data):
+    result = session.query(osm_rivers_polygons_3765.c.name, func.ST_Distance(osm_rivers_polygons_3765.c.geom, func.ST_Transform(data.wkt, 3765)).label('distance')).filter(osm_rivers_polygons_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
+    return result
+
 
 followers = db.Table('followers',
     db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
