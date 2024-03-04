@@ -1,9 +1,10 @@
-from flask import render_template, flash, redirect, url_for, request, send_file
+from flask import render_template, flash, redirect, url_for, request, send_file, jsonify
 from flask_login import current_user, login_user, logout_user, login_required
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, PostForm, EmptyForm, ContactForm, NewProjectForm, EditProjectForm, DeleteProjectForm
 from app.models import User,Post, Questions, Project
 from sqlalchemy.sql import text
+import asyncio
 
 from datetime import datetime
 from urllib.parse import urlsplit
@@ -293,6 +294,7 @@ def not_found(e):
 @app.route('/update_project/download_report/<project_id>', methods=['GET', 'POST'])
 def download_report(project_id):
     project = Project.query.filter_by(id=project_id).first_or_404()
+    results = asyncio.run(project.async_query_all(project.data))
     #get table
     project.birds = project.query_birds_table()
     #get shape for map
@@ -311,3 +313,18 @@ def download_report(project_id):
 
 
     return send_file(os.path.abspath(report))
+
+@app.route('/project_intersections', methods=['POST'])
+def project_intersections():
+    # Extract data from the request or wherever you get it
+    data = request.json.get('your_key', None)
+
+    # Check if data is not None before proceeding
+    if data is None:
+        return jsonify({'error': 'Invalid data provided'}), 400
+
+    # Call the async methods of the Project class
+    results = asyncio.run(project.async_query_all(data))
+
+    # Process the results and return a response
+    return jsonify({'results': results})
