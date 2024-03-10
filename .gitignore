@@ -128,6 +128,7 @@ cython_debug/
 .vscode
 
 # shapefiles, other files
+output/
 *.shp
 *.shx
 *.cpg
