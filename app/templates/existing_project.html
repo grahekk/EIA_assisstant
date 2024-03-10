@@ -77,12 +77,22 @@
         </div>
     </div>
 
+<!-- Chapters-->
+{%if project.chapters %}
+{% for chapter in project.chapters %}
+    {% include '_chapters.html' %}
+{%endfor%}
+{%else%}
+<p>It seems that we could not find any chapter for your proj</p>
+{%endif%}
+
+<!-- impact of the project-->
     <div class = "row">
         <div class="col-lg-10">
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
-                        impact of the project
+                        Impact of the project
                     </h6>
                 </div>
                 <div class="card-body">
