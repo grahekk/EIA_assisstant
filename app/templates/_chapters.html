@@ -1,0 +1,24 @@
+<div class = "row">
+    <div class="col-lg-10">
+        <div class="card shadow mb-4">
+            <a href="#collapseCardExample1" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseCardExample1">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    Chapter: {{chapter.heading}}
+                </h6>
+            </a>
+            <div class="collapse show" id="collapseCardExample1" style="">
+                <div class="card-body">
+                    {{chapter.description}}
+                    {%if chapter.birds %}
+                    <p>The following species of birds would be endangered: </p>
+                    {% for bird in chapter.birds %}
+                    <i>{{bird.latin}}</i>
+                    {%endfor%}
+                    {%else%}
+                    <p>It seems that we could not find any endangered bird for your coordinates</p>
+                    {%endif%}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
