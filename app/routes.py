@@ -2,13 +2,14 @@ from flask import render_template, flash, redirect, url_for, request, send_file,
 from flask_login import current_user, login_user, logout_user, login_required
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, PostForm, EmptyForm, ContactForm, NewProjectForm, EditProjectForm, DeleteProjectForm
-from app.models import User,Post, Questions, Project, query_all
+from app.models import User,Post, Questions, Project, query_all, NaturaChapter
 from sqlalchemy.sql import text
 import asyncio
 
 from datetime import datetime
 from urllib.parse import urlsplit
 
+from .geoanalysis import get_geodataframe_for_point, create_point
 from .plot_map import export_map_with_shapefile
 from .repository import create_report
 import tempfile
@@ -246,10 +247,20 @@ def update_project(project_id):
         project_form.description.data = project.description
         project_form.lat.data = project.lat
         project_form.lon.data = project.lon
-        project.impact = project.assess_impact()
-        project_form.impact = project.impact
-        project.birds = project.query_birds_table()
-        results = query_all(project.create_point())
+
+        # project.impact = project.assess_impact()
+        # project_form.impact = project.impact
+
+        natura_chapter = NaturaChapter(project.project_title,
+                                       project.project_type,
+                                       project_id,
+                                       project.lat,
+                                       project.lon)
+        
+        project.chapters = [natura_chapter]
+
+
+        results = query_all(create_point(project.lat, project.lon))
         labels = [
         "POVS",
         "POP",
@@ -265,9 +276,9 @@ def update_project(project_id):
         "Small rivers",
         "Bigger rivers - polygons"
         ]
-        # for count, k, v in enumerate(results):
-        #     print(k, v)
-            # project.results.append(labels[count], v)
+        
+        for r in results.items():
+            print(r)
 
         # Get the template from YAML
         template = templates.get('project_location', '')
@@ -317,7 +328,7 @@ def download_report(project_id):
     #get table
     project.birds = project.query_birds_table()
     #get shape for map
-    pop_gdf = project.get_geodataframe_for_point()
+    pop_gdf = get_geodataframe_for_point(project.lat, project.lon, db.session)
     # create map image for report
     image_path = "map_image.jpg"
     export_map_with_shapefile(project.lat, project.lon, gdf = pop_gdf, file_path = image_path)
@@ -332,18 +343,3 @@ def download_report(project_id):
 
 
     return send_file(os.path.abspath(report))
-
-@app.route('/project_intersections', methods=['POST'])
-def project_intersections():
-    # Extract data from the request or wherever you get it
-    data = request.json.get('your_key', None)
-
-    # Check if data is not None before proceeding
-    if data is None:
-        return jsonify({'error': 'Invalid data provided'}), 400
-
-    # Call the async methods of the Project class
-    results = asyncio.run(project.async_query_all(data))
-
-    # Process the results and return a response
-    return jsonify({'results': results})
