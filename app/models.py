@@ -9,6 +9,8 @@ from shapely.geometry import Point
 from sqlalchemy import func, create_engine, MetaData, Table, Column
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+import multiprocessing
+from functools import partial
 
 import pyproj
 from shapely.ops import transform
@@ -20,6 +22,7 @@ engine = create_engine(config['SQLALCHEMY_DATABASE_URI'])
 metadata_obj = MetaData(schema="data")
 Session = sessionmaker(bind=engine)
 session = Session()
+
 
 birds_table = Table("Uredba_NN8019_3_Identifikacijski", 
                         metadata_obj,
@@ -105,48 +108,95 @@ def check_pop(data):
     return site_code
 
 def get_administrative_cro(data):
-    administrative = session.query(cro_administrative_opcine_gradovi_3765.c.shapename).filter(cro_administrative_opcine_gradovi_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).one_or_none()
+    administrative = session.query(cro_administrative_opcine_gradovi_3765.c.shapename).filter(cro_administrative_opcine_gradovi_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
     return administrative
 
 def get_habitats_2004(data):
-    habitats = session.query(cro_bio_habitats_2004_3765.c.nks_kod, cro_bio_habitats_2004_3765.c.nks_ime).filter(cro_bio_habitats_2004_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
+    habitats = session.query(cro_bio_habitats_2004_3765.c.nks_kod, 
+                             cro_bio_habitats_2004_3765.c.nks_ime).filter(cro_bio_habitats_2004_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
     return habitats
 
 def get_habitats_2016(data):
-    habitats = session.query(cro_bio_habitats_2016_3765.c.nks1, cro_bio_habitats_2016_3765.c.nks1_naziv).filter(cro_bio_habitats_2016_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
+    habitats = session.query(cro_bio_habitats_2016_3765.c.nks1, 
+                             cro_bio_habitats_2016_3765.c.nks1_naziv).filter(cro_bio_habitats_2016_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
     return habitats
 
 def get_mab_cro(data):
-    mab = session.query(cro_bio_mab_3765.c.naziv, cro_bio_mab_3765.c.zona).filter(cro_bio_mab_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).one()
+    mab = session.query(cro_bio_mab_3765.c.naziv, cro_bio_mab_3765.c.zona).filter(cro_bio_mab_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
     return mab
 
+
 def get_zpp_points(data):
-    result = session.query(cro_bio_zpp_points_3765.c.kategorija, cro_bio_zpp_points_3765.c.naziv_akt, func.ST_Distance(cro_bio_zpp_points_3765.c.geom, func.ST_Transform(data.wkt, 3765)).label('distance')).filter(cro_bio_zpp_points_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
+    result = session.query(cro_bio_zpp_points_3765.c.kategorija,
+                           cro_bio_zpp_points_3765.c.naziv_akt,
+                           func.ST_Distance(cro_bio_zpp_points_3765.c.geom,
+                                            func.ST_Transform(data.wkt, 
+                                                              'EPSG: 4326', 
+                                                              3765)).label('distance')).filter(cro_bio_zpp_points_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
     return result
 
+
 def get_zpp_polygons(data):
-    result = session.query(cro_bio_zpp_polygons_3765.c.kategorija, cro_bio_zpp_polygons_3765.c.naziv_akt, func.ST_Distance(cro_bio_zpp_polygons_3765.c.geom, func.ST_Transform(data.wkt, 3765)).label('distance')).filter(cro_bio_zpp_polygons_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
+    result = session.query(cro_bio_zpp_polygons_3765.c.kategorija, 
+                           cro_bio_zpp_polygons_3765.c.naziv_akt, 
+                           func.ST_Distance(
+                               cro_bio_zpp_polygons_3765.c.geom, 
+                               func.ST_Transform(
+        data.wkt, 'EPSG: 4326', 3765)).label('distance')).filter(cro_bio_zpp_polygons_3765.c.geom.intersects(
+            func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
     return result
 
 def get_forest_private_gj(data):
-    result = session.query(cro_forest_private_gj_3765.c.ngj, cro_forest_private_gj_3765.c.gj, func.ST_Distance(cro_forest_private_gj_3765.c.geom, func.ST_Transform(data.wkt, 3765)).label('distance')).filter(cro_forest_private_gj_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
+    result = session.query(cro_forest_private_gj_3765.c.ngj, cro_forest_private_gj_3765.c.gj, func.ST_Distance(cro_forest_private_gj_3765.c.geom, func.ST_Transform(data.wkt,
+    'EPSG: 4326', 3765)).label('distance')).filter(cro_forest_private_gj_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
     return result
 
 def get_forest_private_unit(data):
-    result = session.query(cro_forest_private_unit_3765.c.odjel, cro_forest_private_unit_3765.c.odsjek, cro_forest_private_unit_3765.c.povrsina, func.ST_Distance(cro_forest_private_unit_3765.c.geom, func.ST_Transform(data.wkt, 3765)).label('distance')).filter(cro_forest_private_unit_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
+    result = session.query(cro_forest_private_unit_3765.c.odjel, cro_forest_private_unit_3765.c.odsjek, cro_forest_private_unit_3765.c.povrsina, func.ST_Distance(cro_forest_private_unit_3765.c.geom, func.ST_Transform(data.wkt,
+    'EPSG: 4326', 3765)).label('distance')).filter(cro_forest_private_unit_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
     return result
 
 def get_esri_water_bodies(data):
-    result = session.query(esri_water_bodies_3765.c.name1, esri_water_bodies_3765.c.type, func.ST_Distance(esri_water_bodies_3765.c.geom, func.ST_Transform(data.wkt, 3765)).label('distance')).filter(esri_water_bodies_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
+    result = session.query(esri_water_bodies_3765.c.name1, esri_water_bodies_3765.c.type, func.ST_Distance(esri_water_bodies_3765.c.geom, func.ST_Transform(data.wkt,
+    'EPSG: 4326', 3765)).label('distance')).filter(esri_water_bodies_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
     return result
 
 def get_osm_rivers_lines(data):
-    result = session.query(osm_rivers_lines_3765.c.name, osm_rivers_lines_3765.c.waterway, func.ST_Distance(osm_rivers_lines_3765.c.geom, func.ST_Transform(data.wkt, 3765)).label('distance')).filter(osm_rivers_lines_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
+    result = session.query(osm_rivers_lines_3765.c.name, osm_rivers_lines_3765.c.waterway, func.ST_Distance(osm_rivers_lines_3765.c.geom, func.ST_Transform(data.wkt,
+    'EPSG: 4326', 3765)).label('distance')).filter(osm_rivers_lines_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
     return result
 
 def get_osm_rivers_polygons(data):
-    result = session.query(osm_rivers_polygons_3765.c.name, func.ST_Distance(osm_rivers_polygons_3765.c.geom, func.ST_Transform(data.wkt, 3765)).label('distance')).filter(osm_rivers_polygons_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
+    result = session.query(osm_rivers_polygons_3765.c.name, func.ST_Distance(osm_rivers_polygons_3765.c.geom, func.ST_Transform(data.wkt,
+    'EPSG: 4326', 3765)).label('distance')).filter(osm_rivers_polygons_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
     return result
+
+
+def query_all(data):
+    functions = [
+        check_povs,
+        check_pop,
+        get_administrative_cro,
+        get_habitats_2004,
+        get_habitats_2016,
+        get_mab_cro,
+        get_zpp_points,
+        get_zpp_polygons,
+        get_forest_private_gj,
+        get_forest_private_unit,
+        get_esri_water_bodies,
+        get_osm_rivers_lines,
+        get_osm_rivers_polygons
+    ]
+
+    results = {}
+
+    for func in functions:
+        result = func(data)
+        results[func.__name__] = result
+
+    return results
+
 
 
 followers = db.Table('followers',
@@ -235,7 +285,7 @@ class Project(db.Model):
         self.project_type = project_type
         self.lat = lat
         self.lon = lon
-        self.create_point(self.lat, self.lon)
+        self.create_point()
 
         self.user_id = user_id
         self.query_birds_table()
@@ -250,7 +300,8 @@ class Project(db.Model):
     def assess_impact(self):
         self.impact = natura_impact_assessment(self.lat, self.lon, self.project_title, self.project_type)
         return self.impact
-    
+
+
     # def query_birds(self):
     #     point = self.create_point(self.lat, self.lon)
     #     self.site_code = check_pop(point)[0]
@@ -262,10 +313,12 @@ class Project(db.Model):
     #         birds_list.append(bird)
         
     #     return birds_list
+
+
     # TODO: Async query all the attributes!!
     # query outside of this class?
     def query_birds_table(self):
-        point = self.create_point(self.lat, self.lon)
+        point = self.create_point()
         self.site_code = check_pop(point)[0][0]
         self.site_name = check_pop(point)[0][1]
         self.birds = session.query(birds_table.c.latin, 
@@ -280,9 +333,9 @@ class Project(db.Model):
         self.site_code = check_povs(self.point)
         return self.site_code
     
-    def create_point(self, lat, lon):
+    def create_point(self):
         # Create a Point object with the given latitude and longitude
-        point = Point(lon, lat)
+        point = Point(self.lon, self.lat)
 
         # Define the target CRS (EPSG:4326)
         target_crs = pyproj.CRS.from_epsg(4326)
@@ -296,144 +349,146 @@ class Project(db.Model):
         # Transform the Point object to the target CRS
         transformed_point = transform(transformer.transform, point)
 
-        return point
+        self.point = point
+
+        return self.point
     
-    async def check_povs(self, data):
-        async with AsyncSession(self.engine) as session:
-            site_code = await session.execute(
-                natura_habitats.select().where(
-                    natura_habitats.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
-                )
-            )
-            return site_code.fetchall()
+    # async def check_povs(self, data):
+    #     async with AsyncSession(engine) as session:
+    #         site_code = await session.execute(
+    #             natura_habitats.select().where(
+    #                 natura_habitats.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
+    #             )
+    #         )
+    #         return site_code.fetchall()
 
-    async def check_pop(self, data):
-        async with AsyncSession(self.engine) as session:
-            site_code = await session.execute(
-                natura_birds.select().where(
-                    natura_birds.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
-                )
-            )
-            return site_code.fetchall()
+    # async def check_pop(self, data):
+    #     async with AsyncSession(engine) as session:
+    #         site_code = await session.execute(
+    #             natura_birds.select().where(
+    #                 natura_birds.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
+    #             )
+    #         )
+    #         return site_code.fetchall()
 
-    async def get_administrative_cro(self, data):
-        async with AsyncSession(self.engine) as session:
-            administrative = await session.execute(
-                cro_administrative_opcine_gradovi_3765.select().where(
-                    cro_administrative_opcine_gradovi_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
-                )
-            )
-            return administrative.scalar()
+    # async def get_administrative_cro(self, data):
+    #     async with AsyncSession(engine) as session:
+    #         administrative = await session.execute(
+    #             cro_administrative_opcine_gradovi_3765.select().where(
+    #                 cro_administrative_opcine_gradovi_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
+    #             )
+    #         )
+    #         return administrative.scalar()
 
-    async def get_habitats_2004(self, data):
-        async with AsyncSession(self.engine) as session:
-            habitats = await session.execute(
-                cro_bio_habitats_2004_3765.select().where(
-                    cro_bio_habitats_2004_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
-                )
-            )
-            return habitats.fetchall()
+    # async def get_habitats_2004(self, data):
+    #     async with AsyncSession(engine) as session:
+    #         habitats = await session.execute(
+    #             cro_bio_habitats_2004_3765.select().where(
+    #                 cro_bio_habitats_2004_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
+    #             )
+    #         )
+    #         return habitats.fetchall()
 
-    async def get_habitats_2016(self, data):
-        async with AsyncSession(self.engine) as session:
-            habitats = await session.execute(
-                cro_bio_habitats_2016_3765.select().where(
-                    cro_bio_habitats_2016_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
-                )
-            )
-            return habitats.fetchall()
+    # async def get_habitats_2016(self, data):
+    #     async with AsyncSession(engine) as session:
+    #         habitats = await session.execute(
+    #             cro_bio_habitats_2016_3765.select().where(
+    #                 cro_bio_habitats_2016_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
+    #             )
+    #         )
+    #         return habitats.fetchall()
 
-    async def get_mab_cro(self, data):
-        async with AsyncSession(self.engine) as session:
-            mab = await session.execute(
-                cro_bio_mab_3765.select().where(
-                    cro_bio_mab_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
-                )
-            )
-            return mab.scalar()
+    # async def get_mab_cro(self, data):
+    #     async with AsyncSession(engine) as session:
+    #         mab = await session.execute(
+    #             cro_bio_mab_3765.select().where(
+    #                 cro_bio_mab_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
+    #             )
+    #         )
+    #         return mab.scalar()
 
-    async def get_zpp_points(self, data):
-        async with AsyncSession(self.engine) as session:
-            result = await session.execute(
-                cro_bio_zpp_points_3765.select().where(
-                    cro_bio_zpp_points_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
-                )
-            )
-            return result.fetchall()
+    # async def get_zpp_points(self, data):
+    #     async with AsyncSession(engine) as session:
+    #         result = await session.execute(
+    #             cro_bio_zpp_points_3765.select().where(
+    #                 cro_bio_zpp_points_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
+    #             )
+    #         )
+    #         return result.fetchall()
 
-    async def get_zpp_polygons(self, data):
-        async with AsyncSession(self.engine) as session:
-            result = await session.execute(
-                cro_bio_zpp_polygons_3765.select().where(
-                    cro_bio_zpp_polygons_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
-                )
-            )
-            return result.fetchall()
+    # async def get_zpp_polygons(self, data):
+    #     async with AsyncSession(engine) as session:
+    #         result = await session.execute(
+    #             cro_bio_zpp_polygons_3765.select().where(
+    #                 cro_bio_zpp_polygons_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
+    #             )
+    #         )
+    #         return result.fetchall()
 
-    async def get_forest_private_gj(self, data):
-        async with AsyncSession(self.engine) as session:
-            result = await session.execute(
-                cro_forest_private_gj_3765.select().where(
-                    cro_forest_private_gj_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
-                )
-            )
-            return result.fetchall()
+    # async def get_forest_private_gj(self, data):
+    #     async with AsyncSession(engine) as session:
+    #         result = await session.execute(
+    #             cro_forest_private_gj_3765.select().where(
+    #                 cro_forest_private_gj_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
+    #             )
+    #         )
+    #         return result.fetchall()
 
-    async def get_forest_private_unit(self, data):
-        async with AsyncSession(self.engine) as session:
-            result = await session.execute(
-                cro_forest_private_unit_3765.select().where(
-                    cro_forest_private_unit_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
-                )
-            )
-            return result.fetchall()
+    # async def get_forest_private_unit(self, data):
+    #     async with AsyncSession(engine) as session:
+    #         result = await session.execute(
+    #             cro_forest_private_unit_3765.select().where(
+    #                 cro_forest_private_unit_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
+    #             )
+    #         )
+    #         return result.fetchall()
 
-    async def get_esri_water_bodies(self, data):
-        async with AsyncSession(self.engine) as session:
-            result = await session.execute(
-                esri_water_bodies_3765.select().where(
-                    esri_water_bodies_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
-                )
-            )
-            return result.fetchall()
+    # async def get_esri_water_bodies(self, data):
+    #     async with AsyncSession(engine) as session:
+    #         result = await session.execute(
+    #             esri_water_bodies_3765.select().where(
+    #                 esri_water_bodies_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
+    #             )
+    #         )
+    #         return result.fetchall()
 
-    async def get_osm_rivers_lines(self, data):
-        async with AsyncSession(self.engine) as session:
-            result = await session.execute(
-                osm_rivers_lines_3765.select().where(
-                    osm_rivers_lines_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
-                )
-            )
-            return result.fetchall()
+    # async def get_osm_rivers_lines(self, data):
+    #     async with AsyncSession(engine) as session:
+    #         result = await session.execute(
+    #             osm_rivers_lines_3765.select().where(
+    #                 osm_rivers_lines_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
+    #             )
+    #         )
+    #         return result.fetchall()
 
-    async def get_osm_rivers_polygons(self, data):
-        async with AsyncSession(self.engine) as session:
-            result = await session.execute(
-                osm_rivers_polygons_3765.select().where(
-                    osm_rivers_polygons_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
-                )
-            )
-            return result.fetchall()
+    # async def get_osm_rivers_polygons(self, data):
+    #     async with AsyncSession(engine) as session:
+    #         result = await session.execute(
+    #             osm_rivers_polygons_3765.select().where(
+    #                 osm_rivers_polygons_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
+    #             )
+    #         )
+    #         return result.fetchall()
 
-    async def async_query_all(self, data):
-        tasks = [
-            self.check_povs(data),
-            self.check_pop(data),
-            self.get_administrative_cro(data),
-            self.get_habitats_2004(data),
-            self.get_habitats_2016(data),
-            self.get_mab_cro(data),
-            self.get_zpp_points(data),
-            self.get_zpp_polygons(data),
-            self.get_forest_private_gj(data),
-            self.get_forest_private_unit(data),
-            self.get_esri_water_bodies(data),
-            self.get_osm_rivers_lines(data),
-            self.get_osm_rivers_polygons(data),
-        ]
+    # async def async_query_all(self, data):
+    #     tasks = [
+    #         self.check_povs(data),
+    #         self.check_pop(data),
+    #         self.get_administrative_cro(data),
+    #         self.get_habitats_2004(data),
+    #         self.get_habitats_2016(data),
+    #         self.get_mab_cro(data),
+    #         self.get_zpp_points(data),
+    #         self.get_zpp_polygons(data),
+    #         self.get_forest_private_gj(data),
+    #         self.get_forest_private_unit(data),
+    #         self.get_esri_water_bodies(data),
+    #         self.get_osm_rivers_lines(data),
+    #         self.get_osm_rivers_polygons(data),
+    #     ]
 
-        results = await asyncio.gather(*tasks)
-        return results
+    #     results = await asyncio.gather(*tasks)
+    #     return results
 
     def get_geodataframe_for_point(self):
         # Define the query to retrieve data within 5 kilometers of the given point
