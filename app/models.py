@@ -5,17 +5,11 @@ from flask_login import UserMixin
 from hashlib import md5
 from .repository import natura_impact_assessment, natura_description
 from geoalchemy2 import Geometry
-from shapely.geometry import Point
 from sqlalchemy import func, create_engine, MetaData, Table, Column
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 import multiprocessing
-from functools import partial
 
-import pyproj
-from shapely.ops import transform
-import geopandas as gpd
-import asyncio
+from .geoanalysis import create_point
 
 
 engine = create_engine(config['SQLALCHEMY_DATABASE_URI'])
@@ -99,11 +93,11 @@ osm_rivers_polygons_3765 = Table("osm_rivers_polygons_3765",
                     autoload_with = engine)
 
 
-def check_povs(data):
+def get_natura_povs(data):
     site_code = session.query(natura_habitats.c.sitecode).filter(natura_habitats.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
     return site_code
 
-def check_pop(data):
+def get_natura_pop(data):
     site_code = session.query(natura_birds.c.sitecode, natura_birds.c.sitename).filter(natura_birds.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
     return site_code
 
@@ -174,8 +168,8 @@ def get_osm_rivers_polygons(data):
 
 def query_all(data):
     functions = [
-        check_povs,
-        check_pop,
+        get_natura_povs,
+        get_natura_pop,
         get_administrative_cro,
         get_habitats_2004,
         get_habitats_2016,
@@ -196,6 +190,21 @@ def query_all(data):
         results[func.__name__] = result
 
     return results
+
+# ('check_povs', [('HR2000416',), ('HR2000420',), ('HR2001311',)])
+# ('check_pop', [('HR1000004', 'Donja Posavina')])
+# ('get_administrative_cro', [('Općina Lipovljani',), ('Grad Novska',), ('Općina Jasenovac',)])
+# ('get_habitats_2004', [('A.2.3.', 'Stalni vodotoci'), ('E.2.2.', 'Poplavne šume hrasta lužnjaka')])
+# ('get_habitats_2016', [('A.2.3.', 'Stalni vodotoci'), ('E.', 'Šume'), ('A.2.3.', 'Stalni vodotoci'), ('J.', 'Izgrađena i industrijska staništa'), ('E.', 'Šume'), ('A.2.3.', 'Stalni vodotoci')])
+# ('get_mab_cro', [('Mura - Drava - Dunav', 'Core Area/Područje jezgre'), ('Mura - Drava - Dunav', 'Buffer Zone/Utjecajna zona'), ('Mura - Drava - Dunav', 'Transition Area/Prijelazno područje')])
+# ('get_zpp_points', [])
+# ('get_zpp_polygons', [(Decimal('2'), 'Lonjsko polje', 0.0), (Decimal('6'), 'Sunjsko polje', 3305.302535209325)])
+# ('get_forest_private_gj', [('Lipovljanske šume', 'G12', 0.0), ('Lipovljansko - novljanske šume', 'P01', 565.3170149374408)])
+# ('get_forest_private_unit', [])
+# ('get_esri_water_bodies', [('Sava', 'Inland perennial', 3330.090078974979), ('Danube', 'Inland perennial', 162142.30281394898)])
+# ('get_osm_rivers_lines', [])
+# ('get_osm_rivers_polygons', [('Sava', 3294.9972545239993)])
+
 
 
 
@@ -285,13 +294,54 @@ class Project(db.Model):
         self.project_type = project_type
         self.lat = lat
         self.lon = lon
-        self.create_point()
+        self.point = create_point(self.lat, self.lon)
+        self.chapters = None
+        # self.chapters = db.relationship('Chapter', backref='author', lazy='dynamic')
 
         self.user_id = user_id
         self.query_birds_table()
         self.get_description()
         self.assess_impact()
         super().__init__()
+
+    # TODO: Get chapters
+    
+
+class Chapter():
+    def __init__(self, project_id, heading, description, impact, table, image, source) -> None:
+        self.project_id = project_id
+        self.heading = heading
+        self.description = description
+        self.impact = impact
+        self.table = table
+        self.image = image
+        self.source = source
+        self.query = None
+        pass
+
+
+class NaturaChapter(Chapter):
+    def __init__(self, project_title, project_type, project_id, lat, lon) -> None:
+        # super().__init__(project_id)
+
+        # redundant stuff for now
+        self.lat = lat
+        self.lon = lon
+        self.project_title = project_title
+        self.project_type = project_type
+
+        # natura specific
+        self.heading = "Natura protected areas"
+        self.point = create_point(lat, lon)
+        # natura pop
+        natura_pop = get_natura_pop(self.point)
+        self.site_code = natura_pop[0][0]
+        self.site_name = natura_pop[0][1]
+
+        self.description = self.get_description()
+        self.impact = self.assess_impact()
+
+        self.table = self.query_birds_table()
 
     def get_description(self):
         self.description = natura_description(self.project_title, self.site_code, self.site_name, distance = 5, intersection=True)
@@ -301,212 +351,18 @@ class Project(db.Model):
         self.impact = natura_impact_assessment(self.lat, self.lon, self.project_title, self.project_type)
         return self.impact
 
-
-    # def query_birds(self):
-    #     point = self.create_point(self.lat, self.lon)
-    #     self.site_code = check_pop(point)[0]
-    #     self.birds = session.query(birds_table.c.latin).filter_by(code=self.site_code).all()
-    #     birds_list = []
-
-    #     for bird in self.birds:
-    #         bird = bird[0]
-    #         birds_list.append(bird)
-        
-    #     return birds_list
-
-
-    # TODO: Async query all the attributes!!
-    # query outside of this class?
     def query_birds_table(self):
-        point = self.create_point()
-        self.site_code = check_pop(point)[0][0]
-        self.site_name = check_pop(point)[0][1]
         self.birds = session.query(birds_table.c.latin, 
                                    birds_table.c.croatian, 
                                    birds_table.c.Status_G, 
                                    birds_table.c.Status_P, 
                                    birds_table.c.Status_Z).filter_by(code=self.site_code).all()
-        
         return self.birds
     
-    def query_povs(self):
-        self.site_code = check_povs(self.point)
-        return self.site_code
+    # def query_povs(self):
+    #     self.site_code = get_natura_povs(self.point)
+    #     return self.site_code
     
-    def create_point(self):
-        # Create a Point object with the given latitude and longitude
-        point = Point(self.lon, self.lat)
-
-        # Define the target CRS (EPSG:4326)
-        target_crs = pyproj.CRS.from_epsg(4326)
-
-        # Define the source CRS (EPSG:4326)
-        source_crs = pyproj.CRS.from_epsg(4326)
-
-        # Create a transformer to convert coordinates to the target CRS
-        transformer = pyproj.Transformer.from_crs(source_crs, target_crs, always_xy=True)
-
-        # Transform the Point object to the target CRS
-        transformed_point = transform(transformer.transform, point)
-
-        self.point = point
-
-        return self.point
-    
-    # async def check_povs(self, data):
-    #     async with AsyncSession(engine) as session:
-    #         site_code = await session.execute(
-    #             natura_habitats.select().where(
-    #                 natura_habitats.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
-    #             )
-    #         )
-    #         return site_code.fetchall()
-
-    # async def check_pop(self, data):
-    #     async with AsyncSession(engine) as session:
-    #         site_code = await session.execute(
-    #             natura_birds.select().where(
-    #                 natura_birds.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
-    #             )
-    #         )
-    #         return site_code.fetchall()
-
-    # async def get_administrative_cro(self, data):
-    #     async with AsyncSession(engine) as session:
-    #         administrative = await session.execute(
-    #             cro_administrative_opcine_gradovi_3765.select().where(
-    #                 cro_administrative_opcine_gradovi_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
-    #             )
-    #         )
-    #         return administrative.scalar()
-
-    # async def get_habitats_2004(self, data):
-    #     async with AsyncSession(engine) as session:
-    #         habitats = await session.execute(
-    #             cro_bio_habitats_2004_3765.select().where(
-    #                 cro_bio_habitats_2004_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
-    #             )
-    #         )
-    #         return habitats.fetchall()
-
-    # async def get_habitats_2016(self, data):
-    #     async with AsyncSession(engine) as session:
-    #         habitats = await session.execute(
-    #             cro_bio_habitats_2016_3765.select().where(
-    #                 cro_bio_habitats_2016_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
-    #             )
-    #         )
-    #         return habitats.fetchall()
-
-    # async def get_mab_cro(self, data):
-    #     async with AsyncSession(engine) as session:
-    #         mab = await session.execute(
-    #             cro_bio_mab_3765.select().where(
-    #                 cro_bio_mab_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
-    #             )
-    #         )
-    #         return mab.scalar()
-
-    # async def get_zpp_points(self, data):
-    #     async with AsyncSession(engine) as session:
-    #         result = await session.execute(
-    #             cro_bio_zpp_points_3765.select().where(
-    #                 cro_bio_zpp_points_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
-    #             )
-    #         )
-    #         return result.fetchall()
-
-    # async def get_zpp_polygons(self, data):
-    #     async with AsyncSession(engine) as session:
-    #         result = await session.execute(
-    #             cro_bio_zpp_polygons_3765.select().where(
-    #                 cro_bio_zpp_polygons_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
-    #             )
-    #         )
-    #         return result.fetchall()
-
-    # async def get_forest_private_gj(self, data):
-    #     async with AsyncSession(engine) as session:
-    #         result = await session.execute(
-    #             cro_forest_private_gj_3765.select().where(
-    #                 cro_forest_private_gj_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
-    #             )
-    #         )
-    #         return result.fetchall()
-
-    # async def get_forest_private_unit(self, data):
-    #     async with AsyncSession(engine) as session:
-    #         result = await session.execute(
-    #             cro_forest_private_unit_3765.select().where(
-    #                 cro_forest_private_unit_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
-    #             )
-    #         )
-    #         return result.fetchall()
-
-    # async def get_esri_water_bodies(self, data):
-    #     async with AsyncSession(engine) as session:
-    #         result = await session.execute(
-    #             esri_water_bodies_3765.select().where(
-    #                 esri_water_bodies_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
-    #             )
-    #         )
-    #         return result.fetchall()
-
-    # async def get_osm_rivers_lines(self, data):
-    #     async with AsyncSession(engine) as session:
-    #         result = await session.execute(
-    #             osm_rivers_lines_3765.select().where(
-    #                 osm_rivers_lines_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
-    #             )
-    #         )
-    #         return result.fetchall()
-
-    # async def get_osm_rivers_polygons(self, data):
-    #     async with AsyncSession(engine) as session:
-    #         result = await session.execute(
-    #             osm_rivers_polygons_3765.select().where(
-    #                 osm_rivers_polygons_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))
-    #             )
-    #         )
-    #         return result.fetchall()
-
-    # async def async_query_all(self, data):
-    #     tasks = [
-    #         self.check_povs(data),
-    #         self.check_pop(data),
-    #         self.get_administrative_cro(data),
-    #         self.get_habitats_2004(data),
-    #         self.get_habitats_2016(data),
-    #         self.get_mab_cro(data),
-    #         self.get_zpp_points(data),
-    #         self.get_zpp_polygons(data),
-    #         self.get_forest_private_gj(data),
-    #         self.get_forest_private_unit(data),
-    #         self.get_esri_water_bodies(data),
-    #         self.get_osm_rivers_lines(data),
-    #         self.get_osm_rivers_polygons(data),
-    #     ]
-
-    #     results = await asyncio.gather(*tasks)
-    #     return results
-
-    def get_geodataframe_for_point(self):
-        # Define the query to retrieve data within 5 kilometers of the given point
-        query = f"""
-            SELECT ST_GeometryN(geom, generate_series(1, ST_NumGeometries(geom))) AS geom_polygon
-            FROM data.pop
-            WHERE ST_DWithin(
-                geom,
-                ST_Transform(ST_SetSRID(ST_MakePoint(15.73, 45.61), 4326),3765),
-                5000
-            )
-            LIMIT 5;
-        """
-
-        # Use geopandas to read the data from the database into a GeoDataFrame
-        gdf = gpd.read_postgis(query, session.bind, geom_col='geom_polygon', crs = 3765)
-
-        return gdf
 
 @login.user_loader
 def load_user(id):
