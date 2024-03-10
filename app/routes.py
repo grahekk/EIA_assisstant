@@ -2,7 +2,7 @@ from flask import render_template, flash, redirect, url_for, request, send_file,
 from flask_login import current_user, login_user, logout_user, login_required
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, PostForm, EmptyForm, ContactForm, NewProjectForm, EditProjectForm, DeleteProjectForm
-from app.models import User,Post, Questions, Project
+from app.models import User,Post, Questions, Project, query_all
 from sqlalchemy.sql import text
 import asyncio
 
@@ -249,6 +249,25 @@ def update_project(project_id):
         project.impact = project.assess_impact()
         project_form.impact = project.impact
         project.birds = project.query_birds_table()
+        results = query_all(project.create_point())
+        labels = [
+        "POVS",
+        "POP",
+        "Administrative zone",
+        "Habitats from 2004 map",
+        "Habitats from 2016 map",
+        "MAB",
+        "Protected areas - points",
+        "Protected areas - polygons",
+        "Forests - private areas",
+        "Forest private units",
+        "Water bodies",
+        "Small rivers",
+        "Bigger rivers - polygons"
+        ]
+        # for count, k, v in enumerate(results):
+        #     print(k, v)
+            # project.results.append(labels[count], v)
 
         # Get the template from YAML
         template = templates.get('project_location', '')
@@ -294,7 +313,7 @@ def not_found(e):
 @app.route('/update_project/download_report/<project_id>', methods=['GET', 'POST'])
 def download_report(project_id):
     project = Project.query.filter_by(id=project_id).first_or_404()
-    results = asyncio.run(project.async_query_all(project.data))
+
     #get table
     project.birds = project.query_birds_table()
     #get shape for map
