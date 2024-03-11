@@ -79,9 +79,10 @@
 
 <!-- Chapters-->
 {%if project.chapters %}
-{% for chapter in project.chapters %}
-    {% include '_chapters.html' %}
-{%endfor%}
+    {% for chapter in project.chapters %}
+        {% set chapter_index = loop.index %}
+        {% include '_chapters.html' %}
+    {%endfor%}
 {%else%}
 <p>It seems that we could not find any chapter for your proj</p>
 {%endif%}
