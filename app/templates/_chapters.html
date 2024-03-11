@@ -1,21 +1,46 @@
 <div class = "row">
     <div class="col-lg-10">
         <div class="card shadow mb-4">
-            <a href="#collapseCardExample1" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseCardExample1">
+            <a href="#collapseCardExample{{chapter_index}}" class="d-block card-header py-3 collapsed" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseCardExample{{chapter_index}}">
                 <h6 class="m-0 font-weight-bold text-primary">
-                    Chapter: {{chapter.heading}}
+                    Chapter {{chapter_index}}: {{chapter.heading}}
                 </h6>
             </a>
-            <div class="collapse show" id="collapseCardExample1" style="">
+            <div class="collapse" id="collapseCardExample{{chapter_index}}" style="">
                 <div class="card-body">
+                    <!-- description text and general data -->
                     {{chapter.description}}
-                    {%if chapter.birds %}
-                    <p>The following species of birds would be endangered: </p>
-                    {% for bird in chapter.birds %}
-                    <i>{{bird.latin}}</i>
-                    {%endfor%}
+
+                    <!-- Data to show in the table -->
+                    {%if chapter.table %}
+                        {%if chapter.table_description %}
+                            <p> {{chapter.table_description}} </p>
+                        {%endif%}
+                        
+                        <div class="row"><div class="col-sm-12"><table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 70%;">
+                            <thead>
+                                <tr role="row">
+                                    {% for column in chapter.table_columns %}
+                                    <th class="sorting sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending" style="width: 158px;">
+                                        {{column}}
+                                    </th>
+                                    {%endfor%}
+                                </tr>
+                            </thead>
+          
+                            <tbody>
+                            {% for row in chapter.table %}
+                            <tr class="odd">
+                                    {% for r in row %}
+                                    <td class="sorting_1">{{r}}</td>
+                                    {%endfor%}
+                                </tr>
+                            {%endfor%}
+                            </tbody>
+                        </table>
+
                     {%else%}
-                    <p>It seems that we could not find any endangered bird for your coordinates</p>
+                    <p> </p>
                     {%endif%}
                 </div>
             </div>
