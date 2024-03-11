@@ -8,6 +8,8 @@ from geoalchemy2 import Geometry
 from sqlalchemy import func, create_engine, MetaData, Table, Column
 from sqlalchemy.orm import sessionmaker
 import multiprocessing
+from datetime import date
+
 
 from .geoanalysis import create_point
 
@@ -191,22 +193,6 @@ def query_all(data):
 
     return results
 
-# ('check_povs', [('HR2000416',), ('HR2000420',), ('HR2001311',)])
-# ('check_pop', [('HR1000004', 'Donja Posavina')])
-# ('get_administrative_cro', [('Općina Lipovljani',), ('Grad Novska',), ('Općina Jasenovac',)])
-# ('get_habitats_2004', [('A.2.3.', 'Stalni vodotoci'), ('E.2.2.', 'Poplavne šume hrasta lužnjaka')])
-# ('get_habitats_2016', [('A.2.3.', 'Stalni vodotoci'), ('E.', 'Šume'), ('A.2.3.', 'Stalni vodotoci'), ('J.', 'Izgrađena i industrijska staništa'), ('E.', 'Šume'), ('A.2.3.', 'Stalni vodotoci')])
-# ('get_mab_cro', [('Mura - Drava - Dunav', 'Core Area/Područje jezgre'), ('Mura - Drava - Dunav', 'Buffer Zone/Utjecajna zona'), ('Mura - Drava - Dunav', 'Transition Area/Prijelazno područje')])
-# ('get_zpp_points', [])
-# ('get_zpp_polygons', [(Decimal('2'), 'Lonjsko polje', 0.0), (Decimal('6'), 'Sunjsko polje', 3305.302535209325)])
-# ('get_forest_private_gj', [('Lipovljanske šume', 'G12', 0.0), ('Lipovljansko - novljanske šume', 'P01', 565.3170149374408)])
-# ('get_forest_private_unit', [])
-# ('get_esri_water_bodies', [('Sava', 'Inland perennial', 3330.090078974979), ('Danube', 'Inland perennial', 162142.30281394898)])
-# ('get_osm_rivers_lines', [])
-# ('get_osm_rivers_polygons', [('Sava', 3294.9972545239993)])
-
-
-
 
 followers = db.Table('followers',
     db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
@@ -309,6 +295,7 @@ class Project(db.Model):
 
 class Chapter():
     def __init__(self, project_id, heading, description, impact, table, image, source) -> None:
+        # TODO: One to many relationship between project and chapters
         self.project_id = project_id
         self.heading = heading
         self.description = description
@@ -324,15 +311,16 @@ class NaturaChapter(Chapter):
     def __init__(self, project_title, project_type, project_id, lat, lon) -> None:
         # super().__init__(project_id)
 
+        # TODO: One to many relationship between project and chapters
         # redundant stuff for now
         self.lat = lat
         self.lon = lon
         self.project_title = project_title
         self.project_type = project_type
 
-        # natura specific
-        self.heading = "Natura protected areas"
         self.point = create_point(lat, lon)
+        # natura specific
+        self.heading = "Natura2000 protected areas"
         # natura pop
         natura_pop = get_natura_pop(self.point)
         self.site_code = natura_pop[0][0]
@@ -341,6 +329,7 @@ class NaturaChapter(Chapter):
         self.description = self.get_description()
         self.impact = self.assess_impact()
 
+        self.table_description = "The following species of birds would be endangered: "
         self.table = self.query_birds_table()
 
     def get_description(self):
@@ -363,6 +352,180 @@ class NaturaChapter(Chapter):
     #     self.site_code = get_natura_povs(self.point)
     #     return self.site_code
     
+
+class ProtectedAreasChapter(Chapter):
+    def __init__(self, project_title, project_type, project_id, lat, lon) -> None:
+
+        # TODO: One to many relationship between project and chapters
+        # redundant stuff for now
+        self.lat = lat
+        self.lon = lon
+        self.project_title = project_title
+        self.project_type = project_type
+        self.point = create_point(lat, lon)
+        # specific
+        self.heading = "Protected areas"
+        self.table_description = "Following protected areas are more or less close to the project: "
+        self.table = get_zpp_polygons(self.point)
+        self.description = self.get_zpp_description()
+
+    def get_zpp_description(self):
+        administrative_description = f"Development project called {self.project_title} is located in some protected areas"
+        return administrative_description
+
+class AdministrativeChapter(Chapter):
+    def __init__(self, project_title, project_type, project_id, lat, lon) -> None:
+
+        # TODO: One to many relationship between project and chapters
+        # redundant stuff for now
+        self.lat = lat
+        self.lon = lon
+        self.project_title = project_title
+        self.project_type = project_type
+        self.point = create_point(lat, lon)
+        # specific
+        self.heading = "Administrative zones"
+        self.administrative_zones = get_administrative_cro(self.point)
+        self.description = self.get_topological_description()
+
+    def get_topological_description(self):
+        administrative_description = f"Development project called {self.project_title} is located administratively in {self.administrative_zones}"
+        return administrative_description
+    
+
+class BiodiversityChapter(Chapter):
+    def __init__(self, project_title, project_type, project_id, lat, lon) -> None:
+
+        # TODO: One to many relationship between project and chapters
+        # redundant stuff for now
+        self.lat = lat
+        self.lon = lon
+        self.project_title = project_title
+        self.project_type = project_type
+        self.point = create_point(lat, lon)
+
+        # specific
+        self.heading = "Biodiversity and habitats"
+        self.table_meta = "karta staništa, 2016"
+        self.table_description = f"Following habitats found on location of the project are described in the table, from {self.table_meta} : "
+        self.table = get_habitats_2016(self.point)
+        self.bioregion = "Continental"
+        self.description = self.get_habitat_description()
+
+    def get_habitat_description(self):
+        biodiversity_description = f"The habitats found on site of {self.project_title} are charasteristic for {self.bioregion} biogeoregion"
+        return biodiversity_description
+    
+
+class ForestChapter(Chapter):
+    def __init__(self, project_title, project_type, project_id, lat, lon) -> None:
+
+        # TODO: One to many relationship between project and chapters
+        # redundant stuff for now
+        self.lat = lat
+        self.lon = lon
+        self.project_title = project_title
+        self.project_type = project_type
+        self.point = create_point(lat, lon)
+
+        # specific
+        self.heading = "Forests and forestry"
+        self.table_meta = f"WMS, ministarstvo poljoprivrede, pristupljeno {date.today()}"
+        self.table_description = f"Location of project is close to units of private forests mentioned in table, from {self.table_meta} : "
+
+        self.forest_gj = get_forest_private_gj(self.point)[1]
+        self.table = get_forest_private_unit(self.point)
+        self.description = self.get_forestry_description()
+
+    def get_forestry_description(self) -> str:
+        forests_description = f""" 
+            On the edges of the {self.project_title}, there are some forests. 
+            By territorial division, private forests are located in {self.forest_gj}"""
+        return forests_description
+    
+
+class ClimateChapter(Chapter):
+    def __init__(self, project_title, project_type, project_id, lat, lon) -> None:
+
+        # TODO: One to many relationship between project and chapters
+        # redundant stuff for now
+        self.lat = lat
+        self.lon = lon
+        self.project_title = project_title
+        self.project_type = project_type
+        self.point = create_point(lat, lon)
+
+        # specific
+        self.heading = "Climate"
+        self.administrative_zones = get_administrative_cro(self.point)
+        self.description = self.get_topological_description()
+
+    def get_topological_description(self):
+        administrative_description = f"Development project called {self.project_title} is located administratively in {self.administrative_zones}"
+        return administrative_description
+    
+
+class GeologyChapter(Chapter):
+    def __init__(self, project_title, project_type, project_id, lat, lon) -> None:
+
+        # TODO: One to many relationship between project and chapters
+        # redundant stuff for now
+        self.lat = lat
+        self.lon = lon
+        self.project_title = project_title
+        self.project_type = project_type
+        self.point = create_point(lat, lon)
+
+        # specific
+        self.heading = "Geology, relief and soils"
+        self.administrative_zones = get_administrative_cro(self.point)
+        self.description = self.get_topological_description()
+
+    def get_topological_description(self):
+        administrative_description = f"Development project called {self.project_title} is located administratively in {self.administrative_zones}"
+        return administrative_description
+    
+class HidrologyChapter(Chapter):
+    def __init__(self, project_title, project_type, project_id, lat, lon) -> None:
+
+        # TODO: One to many relationship between project and chapters
+        # redundant stuff for now
+        self.lat = lat
+        self.lon = lon
+        self.project_title = project_title
+        self.project_type = project_type
+        self.point = create_point(lat, lon)
+
+        # specific
+        self.heading = "Hidrology and water bodies"
+        self.administrative_zones = get_administrative_cro(self.point)
+        self.description = self.get_topological_description()
+
+    def get_topological_description(self):
+        administrative_description = f"Development project called {self.project_title} is located administratively in {self.administrative_zones}"
+        return administrative_description
+    
+class LandscapeChapter(Chapter):
+    def __init__(self, project_title, project_type, project_id, lat, lon) -> None:
+
+        # TODO: One to many relationship between project and chapters
+        # redundant stuff for now
+        self.lat = lat
+        self.lon = lon
+        self.project_title = project_title
+        self.project_type = project_type
+        self.point = create_point(lat, lon)
+
+        # specific
+        self.heading = "Landscape"
+        self.landscape_type = "pitoresque"
+        self.culture = "continental"
+        self.description = self.get_landscape_description()
+
+    def get_landscape_description(self):
+        landscape_description = f"""Landscape around the project can be described as {self.landscape_type}. 
+            Development project is situated in the part of the country that is characterised by {self.culture} culture"""
+        return landscape_description
 
 @login.user_loader
 def load_user(id):
