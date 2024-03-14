@@ -98,14 +98,7 @@
                 </div>
                 <div class="card-body">
                     {{project.impact}}
-                    {%if project.birds %}
-                    <p>The following species of birds would be endangered: </p>
-                    {% for bird in project.birds %}
-                        <i>{{bird.latin}}</i>
-                    {%endfor%}
-                    {%else%}
-                    <p>It seems that we could not find any endangered bird for your coordinates</p>
-                    {%endif%}
+
                 </div>
             </div>
         </div>

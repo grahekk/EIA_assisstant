@@ -133,7 +133,7 @@ def get_zpp_points(data):
 
 
 def get_zpp_polygons(data):
-    result = session.query(cro_bio_zpp_polygons_3765.c.kategorija, 
+    result = session.query(cro_bio_zpp_polygons_3765.c.kategori_1, 
                            cro_bio_zpp_polygons_3765.c.naziv_akt, 
                            func.ST_Distance(
                                cro_bio_zpp_polygons_3765.c.geom, 
@@ -498,12 +498,12 @@ class HidrologyChapter(Chapter):
 
         # specific
         self.heading = "Hidrology and water bodies"
-        self.administrative_zones = get_administrative_cro(self.point)
-        self.description = self.get_topological_description()
+        self.table = get_esri_water_bodies(self.point)
+        self.description = self.get_hidrology_description()
 
-    def get_topological_description(self):
-        administrative_description = f"Development project called {self.project_title} is located administratively in {self.administrative_zones}"
-        return administrative_description
+    def get_hidrology_description(self):
+        hidrology_description = f"There are some water bodies close to the development proj {self.project_title}"
+        return hidrology_description
     
 class LandscapeChapter(Chapter):
     def __init__(self, project_title, project_type, project_id, lat, lon) -> None:
