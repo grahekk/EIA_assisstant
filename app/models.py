@@ -104,7 +104,7 @@ def get_natura_pop(data):
     return site_code
 
 def get_administrative_cro(data):
-    administrative = session.query(cro_administrative_opcine_gradovi_3765.c.shapename).filter(cro_administrative_opcine_gradovi_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
+    administrative = session.query(cro_administrative_opcine_gradovi_3765.c.shapename).filter(cro_administrative_opcine_gradovi_3765.c.geom.contains(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
     return administrative
 
 def get_habitats_2004(data):
