@@ -77,15 +77,15 @@
         </div>
     </div>
 
-<!-- Chapters-->
-{%if project.chapters %}
-    {% for chapter in project.chapters %}
-        {% set chapter_index = loop.index %}
-        {% include '_chapters.html' %}
-    {%endfor%}
-{%else%}
-<p>It seems that we could not find any chapter for your proj</p>
-{%endif%}
+    <!-- Chapters-->
+    {%if project.chapters %}
+        {% for chapter in project.chapters %}
+            {% set chapter_index = loop.index %}
+            {% include '_chapters.html' %}
+        {%endfor%}
+    {%else%}
+    <p>It seems that we could not find any chapter for your proj</p>
+    {%endif%}
 
 <!-- impact of the project-->
     <div class = "row">
