@@ -1,6 +1,6 @@
 import pandas as pd
 
-data = pd.read_csv("/home/nikola/6_analiza_otpornosti/grouped_mean_rcp_4_5.csv", delimiter =";", index_col=0)
+data = pd.read_csv("grouped_mean_rcp_4_5.csv", delimiter =";", index_col=0)
 
 variables_indexes = {"bbd_periodmean",
 "cllfd_periodmean",
