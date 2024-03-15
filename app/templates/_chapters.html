@@ -17,33 +17,40 @@
                             <p> {{chapter.table_description}} </p>
                         {%endif%}
                         
-                        <div class="row"><div class="col-sm-12"><table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 70%;">
-                            <thead>
-                                <tr role="row">
-                                    {% for column in chapter.table_columns %}
-                                    <th class="sorting sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending" style="width: 158px;">
-                                        {{column}}
-                                    </th>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid"
+                                aria-describedby="dataTable_info" style="width: 70%;">
+                                <thead>
+                                    <tr role="row">
+                                        {% for column in chapter.table_columns %}
+                                        <th class="sorting sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1"
+                                            aria-sort="ascending" aria-label="Name: activate to sort column descending"
+                                            style="width: 158px;">
+                                            {{column}}
+                                        </th>
+                                        {%endfor%}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for row in chapter.table %}
+                                    <tr class="odd">
+                                        {% for r in row %}
+                    
+                                        <td class="sorting_1">{{r}}</td>
+                                        {%endfor%}
+                                    </tr>
                                     {%endfor%}
-                                </tr>
-                            </thead>
-          
-                            <tbody>
-                            {% for row in chapter.table %}
-                            <tr class="odd">
-                                    {% for r in row %}
-                                    <td class="sorting_1">{{r}}</td>
-                                    {%endfor%}
-                                </tr>
-                            {%endfor%}
-                            </tbody>
-                        </table>
-
-                    {%else%}
-                    <p> </p>
-                    {%endif%}
+                                </tbody>
+                            </table>
+                    
+                            {%else%}
+                            <p> </p>
+                            
+                            {%endif%}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
+    

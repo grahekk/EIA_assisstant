@@ -2,7 +2,7 @@ from flask import render_template, flash, redirect, url_for, request, send_file,
 from flask_login import current_user, login_user, logout_user, login_required
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, PostForm, EmptyForm, ContactForm, NewProjectForm, EditProjectForm, DeleteProjectForm
-from app.models import User,Post, Questions, Project, query_all, NaturaChapter, AdministrativeChapter, BiodiversityChapter, ForestChapter, LandscapeChapter, ProtectedAreasChapter
+from app.models import User,Post, Questions, Project, query_all, NaturaChapter, AdministrativeChapter, BiodiversityChapter, ForestChapter, LandscapeChapter, ProtectedAreasChapter, HidrologyChapter
 from sqlalchemy.sql import text
 import asyncio
 
@@ -271,12 +271,13 @@ def update_project(project_id):
                                                     project.lat, 
                                                     project.lon)
         
-                
+        
         protected_areas_chapter = ProtectedAreasChapter(project.project_title,
                                                     project.project_type,
                                                     project_id,
                                                     project.lat, 
                                                     project.lon)
+        protected_areas_chapter.table_columns = ["kategorija", "naziv", "udaljenost"]
         
         
         forest_chapter = ForestChapter(project.project_title,
@@ -291,7 +292,13 @@ def update_project(project_id):
                                 project.lat, 
                                 project.lon)
         
-        project.chapters = [administrative_chapter, natura_chapter, biodiversity_chapter, protected_areas_chapter, forest_chapter, landscape_chapter]
+        hidrology_chapter = HidrologyChapter(project.project_title,
+                                project.project_type,
+                                project_id,
+                                project.lat, 
+                                project.lon)
+        
+        project.chapters = [administrative_chapter, natura_chapter, biodiversity_chapter, protected_areas_chapter, hidrology_chapter, forest_chapter, landscape_chapter]
 
 
         results = query_all(create_point(project.lat, project.lon))

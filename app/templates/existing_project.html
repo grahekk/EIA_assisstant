@@ -77,15 +77,15 @@
         </div>
     </div>
 
-<!-- Chapters-->
-{%if project.chapters %}
-    {% for chapter in project.chapters %}
-        {% set chapter_index = loop.index %}
-        {% include '_chapters.html' %}
-    {%endfor%}
-{%else%}
-<p>It seems that we could not find any chapter for your proj</p>
-{%endif%}
+    <!-- Chapters-->
+    {%if project.chapters %}
+        {% for chapter in project.chapters %}
+            {% set chapter_index = loop.index %}
+            {% include '_chapters.html' %}
+        {%endfor%}
+    {%else%}
+    <p>It seems that we could not find any chapter for your proj</p>
+    {%endif%}
 
 <!-- impact of the project-->
     <div class = "row">
@@ -98,14 +98,7 @@
                 </div>
                 <div class="card-body">
                     {{project.impact}}
-                    {%if project.birds %}
-                    <p>The following species of birds would be endangered: </p>
-                    {% for bird in project.birds %}
-                        <i>{{bird.latin}}</i>
-                    {%endfor%}
-                    {%else%}
-                    <p>It seems that we could not find any endangered bird for your coordinates</p>
-                    {%endif%}
+
                 </div>
             </div>
         </div>
