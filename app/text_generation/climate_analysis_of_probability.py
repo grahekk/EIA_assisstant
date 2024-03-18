@@ -1,8 +1,6 @@
-from climate_averages import data
+from .climate_averages import data
 
-print(data)
-
-def location_info_text(data):
+def generate_location_info_text(data):
     udio_vegetacije_sum = data["udio_drveca"] + data["udio_raslinja"] + data["udio_travnjaka"]
     if udio_vegetacije_sum < 33:
         udio_kat = "vrlo mali"
@@ -34,11 +32,10 @@ location_info_data = {
     "udaljenost_suma": 4
 }
 
-result_text = location_info_text(location_info_data)
-print(result_text)
+location_info = generate_location_info_text(location_info_data)
 
 
-def drought_description_text(data):
+def generate_drought_description_text(data):
     text_template = (
         "Prosječno maksimalno godišnje trajanje sušnog razdoblja je kroz zadnje {godine:.0f} godine bilo {P0_consecutive_dry_days:.2f} dana "
         "i očekuje se da će se u budućnosti, u prosjeku između {godina_pocetak:.0f} i {godina_kraj:.0f} g., ova vrijednosti povećati: "
@@ -68,9 +65,7 @@ drought_data = {
     "kategorija_suša_budućnost": "i dalje srednja"
 }
 
-print()
-result_text = drought_description_text(drought_data)
-print(result_text)
+drought_description = generate_drought_description_text(drought_data)
 
 def generate_pluvial_description(data):
     text_template = (
@@ -100,9 +95,7 @@ pluvial_data = {
     "vjerojatnost_obilne_oborine": "srednja"
 }
 
-print()
 pluvial_description = generate_pluvial_description(pluvial_data)
-print(pluvial_description)
 
 def generate_heat_wave_description(data):
     text_template = (
@@ -139,9 +132,7 @@ heat_wave_data = {
     "vjerojatnost_toplval": "i dalje srednja"
 }
 
-print()
 heat_wave_description = generate_heat_wave_description(heat_wave_data)
-print(heat_wave_description)
 
 def generate_wildfire_description(data):
     text_template = (
@@ -165,9 +156,7 @@ wildfire_data = {
     "udaljenost_suma": 4000,
     "vjerojatnost_pozari": "mala"
 }
-print()
 wildfire_description = generate_wildfire_description(wildfire_data)
-print(wildfire_description)
 
 def generate_severe_wind_description(data):
     text_template = (
@@ -191,6 +180,6 @@ severe_wind_data = {
     "geomorphon": "ravnici"
 }
 
-print()
 severe_wind_description = generate_severe_wind_description(severe_wind_data)
-print(severe_wind_description)
+
+result_text = location_info + "\n\n\n" + drought_description + pluvial_description + heat_wave_description + wildfire_description + "\n\n\n" + severe_wind_description
