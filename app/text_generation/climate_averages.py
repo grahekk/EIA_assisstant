@@ -1,6 +1,7 @@
 import pandas as pd
 
-data = pd.read_csv("grouped_mean_rcp_4_5.csv", delimiter =";", index_col=0)
+local_averages_csv = "./app/text_generation/grouped_mean_rcp_4_5.csv"
+data = pd.read_csv(local_averages_csv, delimiter =";", index_col=0)
 
 variables_indexes = {"bbd_periodmean",
 "cllfd_periodmean",
