@@ -10,7 +10,7 @@ from sqlalchemy.orm import sessionmaker
 import multiprocessing
 from datetime import date
 
-
+from .text_generation import climate_analysis_of_probability
 from .geoanalysis import create_point
 
 
@@ -457,12 +457,11 @@ class ClimateChapter(Chapter):
 
         # specific
         self.heading = "Climate"
-        self.administrative_zones = get_administrative_cro(self.point)
-        self.description = self.get_topological_description()
-
-    def get_topological_description(self):
-        administrative_description = f"Development project called {self.project_title} is located administratively in {self.administrative_zones}"
-        return administrative_description
+        self.climate_zones = "CLimate zones are Abcdf"
+        self.description = self.get_climate_description()
+            
+    def get_climate_description(data):
+        return climate_analysis_of_probability.result_text
     
 
 class GeologyChapter(Chapter):
