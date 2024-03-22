@@ -19,6 +19,13 @@ project_choices = [
     ('Urban Park Development', 'Urban Park Development'),
     ('Metro Rail System', 'Metro Rail System')
 ]
+report_choices = [
+    ('Environmental impact assessment', 'Environmental impact assessment'),
+    ('Environmental and Social impact assessment', 'Environmental and Social impact assessment'),
+    ('Scoping elaborate', 'Scoping elaborate'),
+    ('Biodiversity impact report', 'Biodiversity impact report'),
+    ('Climate risk report', 'Climate risk report')
+]
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -66,8 +73,11 @@ class ContactForm(FlaskForm):
 
 class NewProjectForm(FlaskForm):
     project_title = StringField('Title', validators=[DataRequired()])
+    summary = TextAreaField('Project summary', validators=[Length(min=0, max=220)])
     description = TextAreaField('Project description', validators=[Length(min=0, max=440)])
     project_type = SelectField('Select project type', choices=project_choices)
+    report_type = SelectField('Select report type', choices=report_choices)
+    experts = TextAreaField("Name your colaborators on this project", validators=[Length(min=0, max=220)])
     lat = DecimalField('Insert your lat coordinate of project')
     lon = DecimalField('Insert your lon coordinate of project')
     shp_file = FileField('Insert your geo data file')
@@ -75,8 +85,12 @@ class NewProjectForm(FlaskForm):
 
 class EditProjectForm(FlaskForm):
     project_title = StringField('Title', validators=[DataRequired()])
+    summary = TextAreaField('Project summary', validators=[Length(min=0, max=220)])
     description = TextAreaField('Project description', validators=[Length(min=0, max=440)])
     project_type = SelectField('Select project type', choices=project_choices)
+    report_type = SelectField('Select report type', choices=report_choices)
+    experts = TextAreaField("Name your colaborators on this project", validators=[Length(min=0, max=220)])
+
     lat = DecimalField('Insert your lat coordinate of project')
     lon = DecimalField('Insert your lon coordinate of project')
     shp_file = FileField('Insert your geo data file')
