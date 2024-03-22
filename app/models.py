@@ -267,6 +267,8 @@ class Project(db.Model):
     project_title = db.Column(db.String(140))
     description = db.Column(db.String(440))
     project_type = db.Column(db.String(140))
+    # report_type = db.Column(db.String(140))
+    # experts = db.Column(db.String(140))
     # file = db.Column(db.FileField)
     lat = db.Column(db.Float)
     lon = db.Column(db.Float)
