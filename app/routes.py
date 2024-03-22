@@ -234,6 +234,7 @@ def update_project(project_id):
     project_form = NewProjectForm()
     if project_form.validate_on_submit():
         project.project_title = project_form.project_title.data
+        project.summary = project_form.summary.data
         project.description = project_form.description.data
         project.project_type = project_form.project_type.data
         project.lat = project_form.lat.data
@@ -244,6 +245,7 @@ def update_project(project_id):
     elif request.method == 'GET':
         project_form.project_title.data = project.project_title
         project_form.project_type.data = project.project_type
+        # project_form.report_type.data = project.report_type
         project_form.description.data = project.description
         project_form.lat.data = project.lat
         project_form.lon.data = project.lon
