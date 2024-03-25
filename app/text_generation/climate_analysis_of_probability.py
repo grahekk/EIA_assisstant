@@ -1,4 +1,4 @@
-from .climate_averages import data
+from .climate_data import data
 
 def generate_location_info_text(data):
     udio_vegetacije_sum = data["udio_drveca"] + data["udio_raslinja"] + data["udio_travnjaka"]

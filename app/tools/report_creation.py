@@ -9,7 +9,6 @@ import markdown2
 import pypandoc
 
 import matplotlib.pyplot as plt
-import cartopy.crs as ccrs
 
 
 # fiona.drvsupport.supported_drivers['kml'] = 'rw' 

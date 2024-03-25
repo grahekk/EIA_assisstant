@@ -3,7 +3,7 @@ from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from hashlib import md5
-from .repository import natura_impact_assessment, natura_description
+from .tools.report_creation import natura_impact_assessment, natura_description
 from geoalchemy2 import Geometry
 from sqlalchemy import func, create_engine, MetaData, Table, Column
 from sqlalchemy.orm import sessionmaker
@@ -11,7 +11,7 @@ import multiprocessing
 from datetime import date
 
 from .text_generation import climate_analysis_of_probability
-from .geoanalysis import create_point
+from .tools.geoanalysis import create_point
 
 
 engine = create_engine(config['SQLALCHEMY_DATABASE_URI'])

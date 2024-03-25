@@ -9,9 +9,9 @@ import asyncio
 from datetime import datetime
 from urllib.parse import urlsplit
 
-from .geoanalysis import get_geodataframe_for_point, create_point
-from .plot_map import export_map_with_shapefile
-from .repository import create_report
+from .tools.geoanalysis import get_geodataframe_for_point, create_point
+from .tools.plot_map import export_map_with_shapefile
+from .tools.report_creation import create_report
 import tempfile
 import os
 import yaml
