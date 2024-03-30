@@ -1,4 +1,4 @@
-from app import db, login, config
+from app import db, login, config, text_templates
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
@@ -297,7 +297,7 @@ class Project(db.Model):
 
 class Chapter():
     def __init__(self, project_id, heading, description, impact, table, image, source) -> None:
-        # TODO: One to many relationship between project and chapters
+        # TODO: One-to-many relationship between project and chapters
         self.project_id = project_id
         self.heading = heading
         self.description = description
@@ -313,7 +313,7 @@ class NaturaChapter(Chapter):
     def __init__(self, project_title, project_type, project_id, lat, lon) -> None:
         # super().__init__(project_id)
 
-        # TODO: One to many relationship between project and chapters
+        # TODO: One-to-many relationship between project and chapters
         # redundant stuff for now
         self.lat = lat
         self.lon = lon
@@ -322,7 +322,7 @@ class NaturaChapter(Chapter):
 
         self.point = create_point(lat, lon)
         # natura specific
-        self.heading = "Natura2000 protected areas"
+        self.heading = text_templates["natura2000_heading"]
         # natura pop
         natura_pop = get_natura_pop(self.point)
         self.site_code = natura_pop[0][0]
@@ -331,8 +331,13 @@ class NaturaChapter(Chapter):
         self.description = self.get_description()
         self.impact = self.assess_impact()
 
-        self.table_description = "The following species of birds would be endangered: "
+        self.table_description = text_templates["natura2000_birds_table_description"]
         self.table = self.query_birds_table()
+
+
+        self.table_habitats = get_natura_povs(self.point)
+        self.tables = [self.table_habitats, self.table]
+        # TODO: add "tables", a list of "table" objects
 
     def get_description(self):
         self.description = natura_description(self.project_title, self.site_code, self.site_name, distance = 5, intersection=True)
@@ -358,7 +363,7 @@ class NaturaChapter(Chapter):
 class ProtectedAreasChapter(Chapter):
     def __init__(self, project_title, project_type, project_id, lat, lon) -> None:
 
-        # TODO: One to many relationship between project and chapters
+        # TODO: One-to-many relationship between project and chapters
         # redundant stuff for now
         self.lat = lat
         self.lon = lon
@@ -366,19 +371,19 @@ class ProtectedAreasChapter(Chapter):
         self.project_type = project_type
         self.point = create_point(lat, lon)
         # specific
-        self.heading = "Protected areas"
-        self.table_description = "Following protected areas are more or less close to the project: "
+        self.heading = text_templates["protected_areas_heading"]
+        self.table_description = text_templates["protected_areas_table_description"]
         self.table = get_zpp_polygons(self.point)
         self.description = self.get_zpp_description()
 
     def get_zpp_description(self):
-        administrative_description = f"Development project called {self.project_title} is located in some protected areas"
-        return administrative_description
+        protected_areas_description = f"Development project called {self.project_title} is located in some protected areas"
+        return protected_areas_description
 
 class AdministrativeChapter(Chapter):
     def __init__(self, project_title, project_type, project_id, lat, lon) -> None:
 
-        # TODO: One to many relationship between project and chapters
+        # TODO: One-to-many relationship between project and chapters
         # redundant stuff for now
         self.lat = lat
         self.lon = lon
@@ -386,7 +391,7 @@ class AdministrativeChapter(Chapter):
         self.project_type = project_type
         self.point = create_point(lat, lon)
         # specific
-        self.heading = "Administrative zones"
+        self.heading = text_templates["administrative_heading"]
         self.administrative_zones = get_administrative_cro(self.point)
         self.description = self.get_topological_description()
 
@@ -398,7 +403,7 @@ class AdministrativeChapter(Chapter):
 class BiodiversityChapter(Chapter):
     def __init__(self, project_title, project_type, project_id, lat, lon) -> None:
 
-        # TODO: One to many relationship between project and chapters
+        # TODO: One-to-many relationship between project and chapters
         # redundant stuff for now
         self.lat = lat
         self.lon = lon
@@ -407,9 +412,9 @@ class BiodiversityChapter(Chapter):
         self.point = create_point(lat, lon)
 
         # specific
-        self.heading = "Biodiversity and habitats"
-        self.table_meta = "karta staništa, 2016"
-        self.table_description = f"Following habitats found on location of the project are described in the table, from {self.table_meta} : "
+        self.heading = text_templates["biodiversity_heading"]
+        self.table_meta = text_templates["biodiversity_table_meta"]
+        self.table_description = text_templates["biodiversity_table_description"]
         self.table = get_habitats_2016(self.point)
         self.bioregion = "Continental"
         self.description = self.get_habitat_description()
@@ -422,7 +427,7 @@ class BiodiversityChapter(Chapter):
 class ForestChapter(Chapter):
     def __init__(self, project_title, project_type, project_id, lat, lon) -> None:
 
-        # TODO: One to many relationship between project and chapters
+        # TODO: One-to-many relationship between project and chapters
         # redundant stuff for now
         self.lat = lat
         self.lon = lon
@@ -431,8 +436,8 @@ class ForestChapter(Chapter):
         self.point = create_point(lat, lon)
 
         # specific
-        self.heading = "Forests and forestry"
-        self.table_meta = f"WMS, ministarstvo poljoprivrede, pristupljeno {date.today()}"
+        self.heading = text_templates["forests_heading"]
+        self.table_meta = text_templates["forests_table_meta"]
         self.table_description = f"Location of project is close to units of private forests mentioned in table, from {self.table_meta} : "
 
         self.forest_gj = get_forest_private_gj(self.point)[1]
@@ -449,7 +454,7 @@ class ForestChapter(Chapter):
 class ClimateChapter(Chapter):
     def __init__(self, project_title, project_type, project_id, lat, lon) -> None:
 
-        # TODO: One to many relationship between project and chapters
+        # TODO: One-to-many relationship between project and chapters
         # redundant stuff for now
         self.lat = lat
         self.lon = lon
@@ -458,7 +463,7 @@ class ClimateChapter(Chapter):
         self.point = create_point(lat, lon)
 
         # specific
-        self.heading = "Climate"
+        self.heading = text_templates["climate_heading"]
         self.climate_zones = "CLimate zones are Abcdf"
         self.description = self.get_climate_description()
             
@@ -469,7 +474,7 @@ class ClimateChapter(Chapter):
 class GeologyChapter(Chapter):
     def __init__(self, project_title, project_type, project_id, lat, lon) -> None:
 
-        # TODO: One to many relationship between project and chapters
+        # TODO: One-to-many relationship between project and chapters
         # redundant stuff for now
         self.lat = lat
         self.lon = lon
@@ -478,7 +483,7 @@ class GeologyChapter(Chapter):
         self.point = create_point(lat, lon)
 
         # specific
-        self.heading = "Geology, relief and soils"
+        self.heading = text_templates["geology_heading"]
         self.administrative_zones = get_administrative_cro(self.point)
         self.description = self.get_topological_description()
 
@@ -489,7 +494,7 @@ class GeologyChapter(Chapter):
 class HidrologyChapter(Chapter):
     def __init__(self, project_title, project_type, project_id, lat, lon) -> None:
 
-        # TODO: One to many relationship between project and chapters
+        # TODO: One-to-many relationship between project and chapters
         # redundant stuff for now
         self.lat = lat
         self.lon = lon
@@ -498,7 +503,7 @@ class HidrologyChapter(Chapter):
         self.point = create_point(lat, lon)
 
         # specific
-        self.heading = "Hidrology and water bodies"
+        self.heading = text_templates["hidrology_heading"]
         self.table = get_esri_water_bodies(self.point)
         self.description = self.get_hidrology_description()
 
@@ -509,7 +514,7 @@ class HidrologyChapter(Chapter):
 class LandscapeChapter(Chapter):
     def __init__(self, project_title, project_type, project_id, lat, lon) -> None:
 
-        # TODO: One to many relationship between project and chapters
+        # TODO: One-to-many relationship between project and chapters
         # redundant stuff for now
         self.lat = lat
         self.lon = lon
@@ -518,7 +523,7 @@ class LandscapeChapter(Chapter):
         self.point = create_point(lat, lon)
 
         # specific
-        self.heading = "Landscape"
+        self.heading = text_templates["landscape_heading"]
         self.landscape_type = "pitoresque"
         self.culture = "continental"
         self.description = self.get_landscape_description()

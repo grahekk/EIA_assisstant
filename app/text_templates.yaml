@@ -7,11 +7,28 @@ rivers: "The {name} river is {distance} away from the project location."
 water_bodies: "A {type} water body named {name} is {distance} from the project location."
 
 protected_areas: "The protected area '{name}' of category '{category}' is {distance} away."
+protected_areas_heading: "Protected areas"
+protected_areas_table_description: "Protected areas"
+
+natura2000_heading: "Natura2000 protected areas"
+natura2000_birds_table_description: "The following species of birds would be endangered: "
 
 natura2000_habitats: "The Natura 2000 habitat '{name}' with code '{code}' is {distance} away."
 
 natura2000_birds: "The Natura 2000 bird '{name}' with code '{code}' is {distance} away."
 
 forest_stands: "A {type} forest stand in the '{forest_unit}' unit, owned by '{ownership}', is {distance} away."
+forests_table_meta: "WMS, ministarstvo poljoprivrede"
 
 administrative: "The town named {town_name} is part of the project location."
+administrative_heading: "Administrative zones"
+
+biodiversity_heading: "Biodiversity and habitats"
+biodiversity_table_meta: "karta staništa, 2016"
+biodiversity_table_description: "Following habitats found on location of the project are described in the table "
+
+geology_heading: "Geology, relief and soils"
+
+climate_heading: "Climate"
+hidrology_heading: "Hidrology and water bodies"
+landscape_heading: "Landscape"
