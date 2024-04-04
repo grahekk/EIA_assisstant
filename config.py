@@ -13,7 +13,7 @@ host = os.getenv("host")
 port = os.getenv("port")
 database_url: str = f"postgresql://{user}:{password}@{host}:{port}/{db_name}"
 # database_url: str = f"postgresql+asyncpg://{user}:{password}@{host}:{port}/{db_name}"
-yaml_templates = 'app\text_templates.yaml'
+yaml_templates = 'app/text_templates.yaml'
 
 class Config(object):
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess'
