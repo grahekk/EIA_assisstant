@@ -7,8 +7,8 @@
             </a>
         </td>
         <td>{{ project.description }}</td>
-        <td>{{ project.lat }}</td>
-        <td>{{ project.lon }}</td>
+        <td>{{ round(project.lat,2) }}</td>
+        <td>{{ round(project.lon,2) }}</td>
         <td>{{ project.date_created }}</td>
         <td>{{ project.project_type }}</td>
         </tr>
