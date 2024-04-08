@@ -289,10 +289,12 @@ class Project(db.Model):
         self.user_id = user_id
         self.query_birds_table()
         self.get_description()
-        self.assess_impact()
+        self.impact = natura_impact_assessment(lat, lon, project_title, project_type)
         super().__init__()
 
-    # TODO: Get chapters
+    def assess_impact(self):
+        impact = natura_impact_assessment(self.lat, self.lon, self.project_title, self.project_type)
+        return impact
     
 
 class Chapter():
@@ -325,8 +327,12 @@ class NaturaChapter(Chapter):
         self.heading = text_templates["natura2000_heading"]
         # natura pop
         natura_pop = get_natura_pop(self.point)
-        self.site_code = natura_pop[0][0]
-        self.site_name = natura_pop[0][1]
+        if natura_pop:
+            self.site_code = natura_pop[0][0]
+            self.site_name = natura_pop[0][1]
+        else:
+            self.site_code = None
+            self.site_name = None
 
         self.description = self.get_description()
         self.impact = self.assess_impact()
@@ -378,7 +384,12 @@ class ProtectedAreasChapter(Chapter):
 
     def get_zpp_description(self):
         # protected_areas_description = f"Development project called {self.project_title} is located in some protected areas"
+        variables = {
+            'project_title': self.project_title
+        }
         protected_areas_description = text_templates["protected_areas_description"]
+        protected_areas_description = protected_areas_description.format(**variables)
+
         return protected_areas_description
 
 class AdministrativeChapter(Chapter):
@@ -393,11 +404,17 @@ class AdministrativeChapter(Chapter):
         self.point = create_point(lat, lon)
         # specific
         self.heading = text_templates["administrative_heading"]
-        self.administrative_zones = get_administrative_cro(self.point)
+        self.administrative_zones = get_administrative_cro(self.point)[0][0]
         self.description = self.get_topological_description()
 
+
     def get_topological_description(self):
-        administrative_description = f"Development project called {self.project_title} is located administratively in {self.administrative_zones}"
+        variables = {
+            'project_title': self.project_title,
+            'administrative_zones': self.administrative_zones
+        }
+        administrative_description = text_templates["administrative_description"]
+        administrative_description = administrative_description.format(**variables)
         return administrative_description
     
 
@@ -422,7 +439,13 @@ class BiodiversityChapter(Chapter):
 
     def get_habitat_description(self):
         # biodiversity_description = f"The habitats found on site of {self.project_title} are charasteristic for {self.bioregion} biogeoregion"
+        variables = {
+            "project_title": self.project_title,
+            "bioregion": self.bioregion
+        }
         biodiversity_description = text_templates["biodiversity_description"]
+        biodiversity_description = biodiversity_description.format(**variables)
+
         return biodiversity_description
     
 
@@ -440,16 +463,20 @@ class ForestChapter(Chapter):
         # specific
         self.heading = text_templates["forests_heading"]
         self.table_meta = text_templates["forests_table_meta"]
-        self.table_description = f"Location of project is close to units of private forests mentioned in table, from {self.table_meta} : "
+        self.table_description = text_templates["forests_table_description"]
 
-        self.forest_gj = get_forest_private_gj(self.point)[1]
+        self.forest_gj = get_forest_private_gj(self.point)[0]
         self.table = get_forest_private_unit(self.point)
         self.description = self.get_forestry_description()
 
     def get_forestry_description(self) -> str:
-        forests_description = f""" 
-            On the edges of the {self.project_title}, there are some forests. 
-            By territorial division, private forests are located in {self.forest_gj}"""
+        variables = {
+            "project_title": self.project_title,
+            "forest_gj": f"{self.forest_gj[1]} - {self.forest_gj[0]}"
+        }
+        forests_description = text_templates["forests_description"]
+        forests_description = forests_description.format(**variables)
+                                                                   
         return forests_description
     
 
@@ -510,7 +537,12 @@ class HidrologyChapter(Chapter):
         self.description = self.get_hidrology_description()
 
     def get_hidrology_description(self):
-        hidrology_description = f"There are some water bodies close to the development proj {self.project_title}"
+        variables = {
+            "project_title": self.project_title
+        }
+
+        hidrology_description = text_templates["hidrology_description"]
+        hidrology_description = hidrology_description.format(**variables)
         return hidrology_description
     
 class LandscapeChapter(Chapter):
@@ -531,8 +563,12 @@ class LandscapeChapter(Chapter):
         self.description = self.get_landscape_description()
 
     def get_landscape_description(self):
-        landscape_description = f"""Landscape around the project can be described as {self.landscape_type}. 
-            Development project is situated in the part of the country that is characterised by {self.culture} culture"""
+        variables = {
+                    "landscape_type": self.landscape_type,
+                    "culture": self.culture
+                }
+        landscape_description = text_templates["landscape_description"]
+        landscape_description = landscape_description.format(**variables)
         return landscape_description
 
 @login.user_loader
