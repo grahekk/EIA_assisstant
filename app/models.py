@@ -272,7 +272,7 @@ class Project(db.Model):
     # file = db.Column(db.FileField)
     lat = db.Column(db.Float)
     lon = db.Column(db.Float)
-    date_created = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    date_created = db.Column(db.DateTime, index=True, default=datetime.now())
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     impact = db.Column(db.String(20000))
 
