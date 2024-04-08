@@ -51,27 +51,27 @@ def check_intersection(lat, lon):
 def natura_impact_assessment(lat, lon, project_title, project_type):
 #     bird_data = "birds.csv"
 #     bird_data = query_points_within_polygon(lat, lon)
-    text = f"""Project named '{project_title}' is situated at the location {lat}, {lon}.
-           As a {project_type} development project, it is crucial to consider the potential environmental impacts.
+    text = f"""Predmetni zahvat za koji se provodi postupak PUO/OPP, '{project_title}' se nalazi na koordinatama {round(lat, 3)}, {round(lon,3)}.
+           Budući da je to projekt tipa {project_type}, i podliježe procjeni prema Pravilniku o Procjeni utjecaja na okoliš (NN, 2019) bitno je razmotriti potencijalne utjecaje na okoliš.
            
-           The project could have significant effects on the local ecosystem, including wildlife and bird populations. 
-           Some of the potential impacts are:
+           Projekt bi mogao imati utjecaja na neke sastavnice okoliša, tipa na lokalni ekosustav, populacije divljači i ptica.
+            Neki od potencijalnih utjecaja su:
             
-            1. Habitat Destruction: The development may lead to the destruction of natural habitats, affecting the local flora and fauna.
+             1. Uništavanje staništa: Razvoj može dovesti do uništenja prirodnih staništa, utječući na lokalnu floru i faunu.
             
-            2. Disruption of Wildlife Migration: If the project is located along migration routes, it could disrupt the natural migration patterns of birds and other animals.
+             2. Ometanje migracije divljih životinja: Ako se projekt nalazi duž migracijskih ruta, mogao bi poremetiti prirodne obrasce migracije ptica i drugih životinja.
             
-            3. Noise Pollution: Construction activities can contribute to noise pollution, which may disturb bird species that rely on acoustic signals for communication and navigation.
+             3. Zagađenje bukom: Građevinske aktivnosti mogu pridonijeti zagađenju bukom, što može uznemiriti vrste ptica koje se oslanjaju na akustične signale za komunikaciju i navigaciju.
             
-            4. Air and Water Pollution: Depending on the nature of the project, there might be emissions and runoff that can contaminate the air and water, impacting both terrestrial and aquatic bird species.
+             4. Onečišćenje zraka i vode: Ovisno o prirodi projekta, može doći do emisija i otjecanja koji mogu zagaditi zrak i vodu, utječući i na kopnene i na vodene vrste ptica.
             
-            5. Collision Risks: Tall structures such as towers or wind turbines pose a collision risk for birds. It's essential to assess and mitigate these risks to protect bird populations.
+             5. Rizici od sudara: Visoke strukture poput tornjeva ili vjetroturbina predstavljaju rizik od sudara za ptice. Neophodno je procijeniti i ublažiti ove rizike kako bi se zaštitile populacije ptica.
             
-            6. Introduction of Invasive Species: Construction activities may introduce invasive species that could outcompete or prey on local bird species.
+             6. Uvođenje invazivnih vrsta: Građevinske aktivnosti mogu uvesti invazivne vrste, ponajviše flore koje bi mogle ući u kompeticiju s autohtonom florom.
             
-            It's crucial to refer to available environmental impact assessments and conduct thorough studies to minimize negative consequences. The following bird species have been identified in the wider area of the project location based on available data in:
+             Ključno je donijeti odgovarajuće mjere zaštite okoliša te provesti temeljita istraživanja kako bi se negativne posljedice svele na minimum. 
 
-            Consideration of these factors is vital for sustainable development, ensuring that the project minimizes its ecological footprint and preserves biodiversity."""
+             Razmatranje svih čimbenika ključno je za održivi razvoj, time se osigurava da projekt minimalizira svoj okolišni otisak i očuva biološku raznolikost."""
             
     return text
 
