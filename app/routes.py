@@ -250,7 +250,7 @@ def update_project(project_id):
         project_form.lat.data = project.lat
         project_form.lon.data = project.lon
 
-        # project.impact = project.assess_impact()
+        project.impact = project.assess_impact()
         # project_form.impact = project.impact
 
         natura_chapter = NaturaChapter(project.project_title,
