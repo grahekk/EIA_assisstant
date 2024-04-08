@@ -9,6 +9,7 @@ water_bodies: "A {type} water body named {name} is {distance} from the project l
 protected_areas: "The protected area '{name}' of category '{category}' is {distance} away."
 protected_areas_heading: "Protected areas"
 protected_areas_table_description: "Protected areas"
+protected_areas_description: "Development project called {project_title} is located in some protected areas"
 
 natura2000_heading: "Natura2000 protected areas"
 natura2000_birds_table_description: "The following species of birds would be endangered: "
@@ -26,9 +27,14 @@ administrative_heading: "Administrative zones"
 biodiversity_heading: "Biodiversity and habitats"
 biodiversity_table_meta: "karta staništa, 2016"
 biodiversity_table_description: "Following habitats found on location of the project are described in the table "
+biodiversity_bioregion: "Continental"
+biodiversity_description: "The habitats found on site of {project_title} are charasteristic for {bioregion} biogeoregion"
 
 geology_heading: "Geology, relief and soils"
 
 climate_heading: "Climate"
 hidrology_heading: "Hidrology and water bodies"
+
 landscape_heading: "Landscape"
+landscape_type: "pitoresque"
+landscape_culture: "continental"
