@@ -18,11 +18,16 @@ natura2000_habitats: "The Natura 2000 habitat '{name}' with code '{code}' is {di
 
 natura2000_birds: "The Natura 2000 bird '{name}' with code '{code}' is {distance} away."
 
+forests_heading: "Forests"
+forests_description: "On the edges of the {project_title}, there are some forests.
+By territorial division, private forests are located in {forest_gj}"
 forest_stands: "A {type} forest stand in the '{forest_unit}' unit, owned by '{ownership}', is {distance} away."
 forests_table_meta: "WMS, ministarstvo poljoprivrede"
+forests_table_description: "Location of project is close to units of private forests mentioned in table, from {table_meta} : "
 
 administrative: "The town named {town_name} is part of the project location."
 administrative_heading: "Administrative zones"
+administrative_description: "Development project called {project_title} is located administratively in {administrative_zones}"
 
 biodiversity_heading: "Biodiversity and habitats"
 biodiversity_table_meta: "karta staništa, 2016"
@@ -34,7 +39,10 @@ geology_heading: "Geology, relief and soils"
 
 climate_heading: "Climate"
 hidrology_heading: "Hidrology and water bodies"
+hidrology_description: "There are some water bodies close to the development proj {project_title}"
 
 landscape_heading: "Landscape"
 landscape_type: "pitoresque"
 landscape_culture: "continental"
+landscape_description: "Landscape around the project can be described as {landscape_type}. 
+            Development project is situated in the part of the country that is characterised by {culture} culture"
