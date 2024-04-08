@@ -377,7 +377,8 @@ class ProtectedAreasChapter(Chapter):
         self.description = self.get_zpp_description()
 
     def get_zpp_description(self):
-        protected_areas_description = f"Development project called {self.project_title} is located in some protected areas"
+        # protected_areas_description = f"Development project called {self.project_title} is located in some protected areas"
+        protected_areas_description = text_templates["protected_areas_description"]
         return protected_areas_description
 
 class AdministrativeChapter(Chapter):
@@ -416,11 +417,12 @@ class BiodiversityChapter(Chapter):
         self.table_meta = text_templates["biodiversity_table_meta"]
         self.table_description = text_templates["biodiversity_table_description"]
         self.table = get_habitats_2016(self.point)
-        self.bioregion = "Continental"
+        self.bioregion = text_templates["biodiversity_bioregion"]
         self.description = self.get_habitat_description()
 
     def get_habitat_description(self):
-        biodiversity_description = f"The habitats found on site of {self.project_title} are charasteristic for {self.bioregion} biogeoregion"
+        # biodiversity_description = f"The habitats found on site of {self.project_title} are charasteristic for {self.bioregion} biogeoregion"
+        biodiversity_description = text_templates["biodiversity_description"]
         return biodiversity_description
     
 
@@ -488,8 +490,8 @@ class GeologyChapter(Chapter):
         self.description = self.get_topological_description()
 
     def get_topological_description(self):
-        administrative_description = f"Development project called {self.project_title} is located administratively in {self.administrative_zones}"
-        return administrative_description
+        geology_description = f"Development project called {self.project_title} is located administratively in {self.administrative_zones}"
+        return geology_description
     
 class HidrologyChapter(Chapter):
     def __init__(self, project_title, project_type, project_id, lat, lon) -> None:
@@ -524,8 +526,8 @@ class LandscapeChapter(Chapter):
 
         # specific
         self.heading = text_templates["landscape_heading"]
-        self.landscape_type = "pitoresque"
-        self.culture = "continental"
+        self.landscape_type = text_templates["landscape_type"]
+        self.culture = text_templates["landscape_culture"]
         self.description = self.get_landscape_description()
 
     def get_landscape_description(self):
