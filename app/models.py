@@ -287,8 +287,8 @@ class Project(db.Model):
         # self.chapters = db.relationship('Chapter', backref='author', lazy='dynamic')
 
         self.user_id = user_id
-        self.query_birds_table()
-        self.get_description()
+        # self.query_birds_table()
+        # self.get_description()
         self.impact = natura_impact_assessment(lat, lon, project_title, project_type)
         super().__init__()
 
