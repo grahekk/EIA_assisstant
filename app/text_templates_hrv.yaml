@@ -1,0 +1,48 @@
+project_location: "Projekt {project} se nalazi na lokaciji {lat}, {lon}."
+
+habitats: "Stanište {name} nalazi se na koordinatama {lat}, {lon}."
+
+rivers: "Rijeka {name} udaljena je {distance} od lokacije projekta."
+
+water_bodies: "Vodeno tijelo tipa {type} nazvano {name} udaljeno je {distance} od lokacije projekta."
+
+protected_areas: "Zaštićeno područje '{name}' kategorije '{category}' udaljeno je {distance}."
+protected_areas_heading: "Zaštićena područja"
+protected_areas_table_description: "Zaštićena područja"
+protected_areas_description: "Razvojni projekt pod nazivom {project_title} nalazi se u nekim zaštićenim područjima"
+
+natura2000_heading: "Zaštićena područja Natura2000"
+natura2000_birds_table_description: "Sljedeće vrste ptica bile bi ugrožene: "
+
+natura2000_habitats: "Stanište Natura 2000 '{name}' s kodom '{code}' udaljeno je {distance}."
+
+natura2000_birds: "Ptica Natura 2000 '{name}' s kodom '{code}' udaljena je {distance}."
+
+forests_heading: "Šume"
+forests_description: "Na rubovima {project_title} nalaze se neke šume.
+Prema teritorijalnoj podjeli, privatne šume nalaze se u {forest_gj}"
+forest_stands: "Šumski stoj {type} u jedinici '{forest_unit}', u vlasništvu '{ownership}', udaljen je {distance}."
+forests_table_meta: "WMS, Ministarstvo poljoprivrede"
+forests_table_description: "Lokacija projekta blizu je jedinica privatnih šuma navedenih u tablici, s {table_meta} : "
+
+administrative: "Grad pod nazivom {town_name} dio je lokacije projekta."
+administrative_heading: "Administrativne zone"
+administrative_description: "{administrative_zones} je administrativno područje na kojem se nalazi predmetni projekt, {project_title}"
+
+biodiversity_heading: "Bioraznolikost i staništa"
+biodiversity_table_meta: "karta staništa, 2016"
+biodiversity_table_description: "Sljedeća staništa pronađena na lokaciji projekta opisana su u tablici "
+biodiversity_bioregion: "Kontinentalno"
+biodiversity_description: "Staništa pronađena na lokaciji {project_title} karakteristična su za {bioregion} biogeoregion"
+
+geology_heading: "Geologija, reljef i tla"
+
+climate_heading: "Klima"
+hidrology_heading: "Hidrologija i vodena tijela"
+hidrology_description: "U blizini razvojnog projekta {project_title} nalaze se vodena tijela, u tablici je prikazano neko vodeno tijelo, njegova kategorija i udaljenost"
+
+landscape_heading: "Krajolik"
+landscape_type: "pitoreskan"
+landscape_culture: "kontinentalnom"
+landscape_description: "Krajolik oko projekta može se opisati kao {landscape_type}.   
+            Razvojni projekt nalazi se u dijelu zemlje koji je karakteriziran {culture} kulturom"
