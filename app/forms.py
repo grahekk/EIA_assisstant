@@ -5,7 +5,7 @@ from app.models import User
 import re
 import os
 
-project_choices = [
+project_choices_eng = [
     ('Residential Complex', 'Residential Complex'),
     ('Shopping Mall', 'Shopping Mall'),
     ('Office Tower', 'Office Tower'),
@@ -18,6 +18,20 @@ project_choices = [
     ('Sports Stadium', 'Sports Stadium'),
     ('Urban Park Development', 'Urban Park Development'),
     ('Metro Rail System', 'Metro Rail System')
+]
+project_choices = [
+    ('Residential Complex', 'Stambeno naselje'),
+    ('Shopping Mall', 'Šoping centar'),
+    ('Office Tower', 'Poslovna zgrada'),
+    ('Bridge Construction', 'Cestovni most'),
+    ('School Renovation', 'Renovacija škole'),
+    ('Hospital Expansion', 'Proširenje bolničkog krila'),
+    ('Highway Interchange', 'Autocesta ili državna cesta'),
+    ('Data Center Construction', 'Proizvodni pogon'),
+    ('Water Treatment Plant', 'Pročistač otpadnih voda'),
+    ('Sports Stadium', 'Sporski stadion'),
+    ('Urban Park Development', 'Novi urbani park'),
+    ('Metro Rail System', 'Urbana željeznica')
 ]
 report_choices = [
     ('Environmental impact assessment', 'Environmental impact assessment'),
