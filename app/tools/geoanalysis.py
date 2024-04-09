@@ -28,7 +28,7 @@ def get_geodataframe_for_point(lat, lon, session):
             ST_Transform(ST_SetSRID(ST_MakePoint({lon}, {lat}), 4326),3765),
             5000
         )
-        LIMIT 5;
+        LIMIT 1;
     """
 
     # Use geopandas to read the data from the database into a GeoDataFrame
