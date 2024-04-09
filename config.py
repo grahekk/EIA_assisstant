@@ -13,7 +13,7 @@ host = os.getenv("host")
 port = os.getenv("port")
 database_url: str = f"postgresql://{user}:{password}@{host}:{port}/{db_name}"
 # database_url: str = f"postgresql+asyncpg://{user}:{password}@{host}:{port}/{db_name}"
-yaml_templates = r'C:\Users\Nikola\Documents\GitHub\EIA_assisstant\app\text_templates.yaml'
+yaml_templates = r'app\text_templates_hrv.yaml'
 
 class Config(object):
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess'
@@ -27,7 +27,7 @@ class TextTemplates():
     """
     Represents text templates from yaml file.
     """
-    with open(yaml_templates, 'r') as file:
+    with open(yaml_templates, 'r', encoding="UTF-8") as file:
         text_templates = yaml.safe_load(file)
 
 
