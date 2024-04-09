@@ -196,7 +196,7 @@ def merge_cells_in_column(table, column_index):
 # loop iterates over list of objects. 
 # Each object should representate, "unpack" or print (repr) in chapter in it's specific way
                 
-def generate_md_document(title, heading, paragraph, table, table_name, image, image_description, source):
+def generate_md_chapter(title, heading, paragraph, table, table_name, image, image_description, source):
     md_content = f"# {title}\n\n"
 
     # Heading
@@ -231,7 +231,7 @@ def create_report(title, paragraph, table, image, output):
     image_description = "Image 1: map of location of project\n"
     source = "https://www.haop.hr/hr/tematska-podrucja/odrzivo-koristenje-prirodnih-dobara-i-ekoloska-mreza/ekoloska-mreza\n"
 
-    md_content = generate_md_document(title, chapter, paragraph, table, table_name, image, image_description, source)
+    md_content = generate_md_chapter(title, chapter, paragraph, table, table_name, image, image_description, source)
 
     md_path = "output.md"
     with open(md_path, "w", encoding="utf-8") as md_file:
