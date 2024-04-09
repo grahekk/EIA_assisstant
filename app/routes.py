@@ -2,7 +2,7 @@ from flask import render_template, flash, redirect, url_for, request, send_file,
 from flask_login import current_user, login_user, logout_user, login_required
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, PostForm, EmptyForm, ContactForm, NewProjectForm, EditProjectForm, DeleteProjectForm
-from app.models import User,Post, Questions, Project, query_all, NaturaChapter, AdministrativeChapter, BiodiversityChapter, ForestChapter, LandscapeChapter, ProtectedAreasChapter, HidrologyChapter, ClimateChapter
+from app.models import User,Post, Questions, Project, query_all, NaturaChapter, AdministrativeChapter, BiodiversityChapter, ForestChapter, LandscapeChapter, ProtectedAreasChapter, HidrologyChapter, ClimateChapter, session
 from sqlalchemy.sql import text
 import asyncio
 
@@ -231,7 +231,7 @@ def new_project():
 @app.route('/update_project/<project_id>', methods=['GET', 'POST'])
 def update_project(project_id):
     project = Project.query.filter_by(id=project_id).first_or_404()
-    project_form = NewProjectForm()
+    project_form = EditProjectForm()
     if project_form.validate_on_submit():
         project.project_title = project_form.project_title.data
         project.summary = project_form.summary.data
@@ -382,18 +382,25 @@ def download_report(project_id):
     project = Project.query.filter_by(id=project_id).first_or_404()
 
     #get table
-    project.birds = project.query_birds_table()
+    # project.birds = project.query_birds_table()
     #get shape for map
-    pop_gdf = get_geodataframe_for_point(project.lat, project.lon, db.session)
+    pop_gdf = get_geodataframe_for_point(project.lat, project.lon, session)
     # create map image for report
     image_path = "map_image.jpg"
     export_map_with_shapefile(project.lat, project.lon, gdf = pop_gdf, file_path = image_path)
     report = "report.docx"
     # TODO: do the temporary directory for storing reports (tempfile)
     #create report
+    natura_chapter = NaturaChapter(project.project_title,
+                                        project.project_type,
+                                        project_id,
+                                        project.lat,
+                                        project.lon)
+
+
     create_report(project.project_title, 
                   project.impact, 
-                  project.birds,
+                  natura_chapter.table,
                   image_path, 
                   report)
 
