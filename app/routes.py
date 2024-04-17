@@ -5,6 +5,7 @@ from app.forms import LoginForm, RegistrationForm, PostForm, EmptyForm, ContactF
 from app.models import User,Post, Questions, Project, query_all, NaturaChapter, AdministrativeChapter, BiodiversityChapter, ForestChapter, LandscapeChapter, ProtectedAreasChapter, HidrologyChapter, ClimateChapter, session
 from sqlalchemy.sql import text
 import asyncio
+from werkzeug.utils import secure_filename
 
 from datetime import datetime
 from urllib.parse import urlsplit
@@ -19,6 +20,10 @@ import yaml
 # Load YAML data
 with open('app/text_templates.yaml', 'r') as file:
     templates = yaml.safe_load(file)
+
+UPLOAD_FOLDER = './uploads'
+ALLOWED_EXTENSIONS = {'gpkg', 'geojson', 'shp', 'kml'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Add templates to the context
 @app.context_processor
@@ -333,8 +338,8 @@ def update_project(project_id):
         "Bigger rivers - polygons"
         ]
         
-        for r in results.items():
-            print(r)
+        # for r in results.items():
+        #     print(r)
 
         # Get the template from YAML
         template = templates.get('project_location', '')
@@ -406,3 +411,45 @@ def download_report(project_id):
 
 
     return send_file(os.path.abspath(report))
+
+# @app.route('/upload')
+# def upload_file():
+#    return render_template('upload.html')
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route('/update_project/<project_id>/upload_file/', methods=['GET','POST'])
+def upload_file(project_id):
+    project = Project.query.filter_by(id=project_id).first_or_404()
+    if request.method == 'POST':
+
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+
+        # If the user does not select a file, the browser submits an
+        # empty file without a filename.
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            print(filename)
+            print(app.config["UPLOAD_FOLDER"])
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            project.geo_file = file
+            print(project.geo_file)
+            return redirect(url_for('update_project', project_id=project_id))
+        
+        elif not allowed_file(file.filename):
+            flash('The file is not valid, try with .geojson')
+            return redirect(request.url)
+    
+    # render the upload page
+    elif request.method == "GET": 
+        return render_template("upload_file.html")
