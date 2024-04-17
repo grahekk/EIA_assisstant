@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class = "container-fluid">
+
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Upload new File</h1>
+    </div>
+    <div class="col-lg-6">
+        <form method=post enctype=multipart/form-data>
+            <input type=file name=file>
+            <input type=submit value=Upload>
+
+        </form>
+    </div>
+    
+</div>
+{% endblock %}
