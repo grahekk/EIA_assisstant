@@ -5,8 +5,10 @@ from flask_login import UserMixin
 from hashlib import md5
 from .tools.report_creation import natura_impact_assessment, natura_description
 from geoalchemy2 import Geometry
-from sqlalchemy import func, create_engine, MetaData, Table, Column
-from sqlalchemy.orm import sessionmaker
+from geoalchemy2.shape import to_shape
+from shapely.geometry import mapping
+from sqlalchemy import func, create_engine, MetaData, Table, Column, Integer, Text, ForeignKey
+from sqlalchemy.orm import sessionmaker, relationship
 import multiprocessing
 from datetime import date
 
@@ -269,7 +271,7 @@ class Project(db.Model):
     project_type = db.Column(db.String(140))
     # report_type = db.Column(db.String(140))
     # experts = db.Column(db.String(140))
-    # file = db.Column(db.FileField)
+    # geo_file = db.Column(db.FileField)
     lat = db.Column(db.Float)
     lon = db.Column(db.Float)
     date_created = db.Column(db.DateTime, index=True, default=datetime.now())
@@ -285,7 +287,7 @@ class Project(db.Model):
         self.point = create_point(self.lat, self.lon)
         self.chapters = None
         # self.chapters = db.relationship('Chapter', backref='author', lazy='dynamic')
-
+        self.geo_file = None
         self.user_id = user_id
         # self.query_birds_table()
         # self.get_description()
@@ -463,7 +465,7 @@ class ForestChapter(Chapter):
         # specific
         self.heading = text_templates["forests_heading"]
         self.table_meta = text_templates["forests_table_meta"]
-        self.table_description = text_templates["forests_table_description"]
+        self.table_description = text_templates["forests_table_description"].format(**{"table_meta":self.table_meta})
 
         self.forest_gj = get_forest_private_gj(self.point)[0]
         self.table = get_forest_private_unit(self.point)
@@ -574,3 +576,27 @@ class LandscapeChapter(Chapter):
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))
+
+
+class GeoFile(db.Model):
+    __tablename__ = 'geo_files'
+
+    id = Column(Integer, primary_key=True)
+    project_id = Column(Integer, ForeignKey('project.id'))
+    project = relationship("Project", back_populates="geo_files")
+    filename = Column(Text)
+    geometry = Column(Geometry('GEOMETRY'))
+
+    def __init__(self, filename, geometry):
+        self.filename = filename
+        self.geometry = geometry
+
+    def as_geojson(self):
+        return {
+            "type": "Feature",
+            "properties": {
+                "filename": self.filename
+                # Add other properties if needed
+            },
+            "geometry": mapping(to_shape(self.geometry))
+        }
