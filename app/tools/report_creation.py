@@ -77,12 +77,8 @@ def natura_impact_assessment(lat, lon, project_title, project_type):
 
 def natura_description(project_title, site_code, site_name, distance, intersection: bool):
     if intersection == True:
-        text = f"""Location of project {project_title} is situated at the location of Natura2000 protected areas:
-                    The following areas are touched:
-                    {site_code} {site_name}
-                    The following areas are close:
-                    {site_code} {site_name} which is distanced {distance}
-                    ."""
+        text = f"""Projekt {project_title} se nalazi na području ili pored Natura2000 zaštićenih područja:
+                    {site_code} {site_name}."""
                 
     elif intersection == False:
         text = f"""Location of {project_title} is not situated on the locations of Natura2000 protected areas
@@ -204,31 +200,34 @@ def generate_md_chapter(title, heading, paragraph, table, table_name, image, ima
 
     # Paragraph
     md_content += f"{paragraph}\n\n"
-
+    
     # Table
-    md_content += f"Table: {table_name} \n"
-    md_content += "| Header 1 | Header 2 |\n"
+    md_content += f"Tablica: {table_name} \n"
+    md_content += "| Latinski naziv vrste | Hrvatski naziv vrste |\n"
     md_content += "| -------- | -------- |\n"
-    for row in table:
-        md_content += f"| {row[0]} | {row[1]} |\n"
+    for count, row in enumerate(table):
+        if row == table[-1]:
+            break
+        else:
+            md_content += f"| {row[0]} | {row[1]} |\n"
     md_content += "\n"
 
     # Image
     md_content += f"![{image_description}]({image})\n\n"
 
     # Source as footnote
-    md_content += f"Source: {source}[^1]\n\n"
+    md_content += f"Izvor: {source}[^1]\n\n"
 
     # Footnote
-    md_content += "[^1]: Source details go here\n"
+    md_content += "[^1]: Detalji izvora dolaze ovdje u fusnoti \n"
 
     return md_content
 
 
 def create_report(title, paragraph, table, image, output):
-    chapter = "Natura"
-    table_name = "Table 1: species on location of project\n"
-    image_description = "Image 1: map of location of project\n"
+    chapter = "Natura 2000 područja"
+    table_name = "Vrste ptica na predmetnoj lokaciji\n"
+    image_description = "Karta obuhvata zahvata u odnosu na Natura2000 područja\n"
     source = "https://www.haop.hr/hr/tematska-podrucja/odrzivo-koristenje-prirodnih-dobara-i-ekoloska-mreza/ekoloska-mreza\n"
 
     md_content = generate_md_chapter(title, chapter, paragraph, table, table_name, image, image_description, source)
