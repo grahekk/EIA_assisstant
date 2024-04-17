@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField, SelectField, DecimalField, FileField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField, SelectField, DecimalField, FileField, MultipleFileField
 from wtforms.validators import DataRequired, ValidationError, DataRequired, Email, EqualTo, Length
 from app.models import User
 import re
@@ -20,18 +20,18 @@ project_choices_eng = [
     ('Metro Rail System', 'Metro Rail System')
 ]
 project_choices = [
-    ('Residential Complex', 'Stambeno naselje'),
-    ('Shopping Mall', 'Šoping centar'),
-    ('Office Tower', 'Poslovna zgrada'),
-    ('Bridge Construction', 'Cestovni most'),
-    ('School Renovation', 'Renovacija škole'),
-    ('Hospital Expansion', 'Proširenje bolničkog krila'),
-    ('Highway Interchange', 'Autocesta ili državna cesta'),
-    ('Data Center Construction', 'Proizvodni pogon'),
-    ('Water Treatment Plant', 'Pročistač otpadnih voda'),
-    ('Sports Stadium', 'Sporski stadion'),
-    ('Urban Park Development', 'Novi urbani park'),
-    ('Metro Rail System', 'Urbana željeznica')
+    ('Stambeno naselje', 'Stambeno naselje'),
+    ('Šoping centar', 'Šoping centar'),
+    ('Poslovna zgrada', 'Poslovna zgrada'),
+    ('Cestovni most', 'Cestovni most'),
+    ('Renovacija škole', 'Renovacija škole'),
+    ('Proširenje bolničkog krila', 'Proširenje bolničkog krila'),
+    ('Autocesta ili državna cesta', 'Autocesta ili državna cesta'),
+    ('Proizvodni pogon', 'Proizvodni pogon'),
+    ('Pročistač otpadnih voda', 'Pročistač otpadnih voda'),
+    ('Sporski stadion', 'Sporski stadion'),
+    ('Novi urbani park', 'Novi urbani park'),
+    ('Urbana željeznica', 'Urbana željeznica')
 ]
 report_choices = [
     ('Environmental impact assessment', 'Environmental impact assessment'),
@@ -94,7 +94,7 @@ class NewProjectForm(FlaskForm):
     experts = TextAreaField("Name your colaborators on this project", validators=[Length(min=0, max=220)])
     lat = DecimalField('Insert your lat coordinate of project')
     lon = DecimalField('Insert your lon coordinate of project')
-    shp_file = FileField('Insert your geo data file')
+    geo_file = FileField('Insert your geo data file')
     submit = SubmitField('Save project')
 
 class EditProjectForm(FlaskForm):
@@ -107,8 +107,20 @@ class EditProjectForm(FlaskForm):
 
     lat = DecimalField('Insert your lat coordinate of project')
     lon = DecimalField('Insert your lon coordinate of project')
-    shp_file = FileField('Insert your geo data file')
+    # TODO: add fileField validators, or add MultipleFileField for shp file
+    geo_file = MultipleFileField('Insert your geo data file')
     submit = SubmitField('Save project')
+
+    class Meta:
+        # Set the enctype attribute for the form
+        enctype = 'multipart/form-data'
+
+class UploadForm(FlaskForm):
+    geo_file = FileField('Insert your geo data file')
+    submit = SubmitField('Save the geo data file')
+    class Meta:
+        # Set the enctype attribute for the form
+        enctype = 'multipart/form-data'
 
 class DeleteProjectForm(FlaskForm):
     submit = SubmitField('Delete project')
