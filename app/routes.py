@@ -1,11 +1,14 @@
 from flask import render_template, flash, redirect, url_for, request, send_file, jsonify
 from flask_login import current_user, login_user, logout_user, login_required
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, PostForm, EmptyForm, ContactForm, NewProjectForm, EditProjectForm, DeleteProjectForm
-from app.models import User,Post, Questions, Project, query_all, NaturaChapter, AdministrativeChapter, BiodiversityChapter, ForestChapter, LandscapeChapter, ProtectedAreasChapter, HidrologyChapter, ClimateChapter, session
+from app.forms import LoginForm, RegistrationForm, PostForm, EmptyForm, ContactForm, NewProjectForm, EditProjectForm, DeleteProjectForm, GeolocationForm
+from app.models import User, Post, Questions, Project, query_all, NaturaChapter, AdministrativeChapter, BiodiversityChapter, ForestChapter, LandscapeChapter, ProtectedAreasChapter, HidrologyChapter, ClimateChapter, session, GeoFile
 from sqlalchemy.sql import text
-import asyncio
+from geoalchemy2.functions import ST_AsText, ST_Transform
 from werkzeug.utils import secure_filename
+from shapely.geometry import shape
+from shapely import to_geojson, from_wkb, from_wkt
+import geojson
 
 from datetime import datetime
 from urllib.parse import urlsplit
@@ -13,7 +16,6 @@ from urllib.parse import urlsplit
 from .tools.geoanalysis import get_geodataframe_for_point, create_point
 from .tools.plot_map import export_map_with_shapefile
 from .tools.report_creation import create_report
-import tempfile
 import os
 import yaml
 
@@ -346,7 +348,12 @@ def update_project(project_id):
         # Substitute placeholders with actual values
         result_text = template.format(project=project.project_title, lat=project.lat, lon=project.lon)
 
-    return render_template('existing_project.html', title='Update project',
+        if project.geo_files:
+            # transform wkb to geojson
+            geometry = from_wkt(db.session.scalar(ST_AsText(project.geo_files.geometry)))
+            project.geojson_data = to_geojson(geometry)
+
+    return render_template('update_project.html', title='Update project',
                         form=project_form, project = project)   
 
 @login_required
@@ -439,11 +446,28 @@ def upload_file(project_id):
         
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            print(filename)
-            print(app.config["UPLOAD_FOLDER"])
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            project.geo_file = file
-            print(project.geo_file)
+
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(file_path)
+
+            # Convert GeoJSON data to Shapely geometry
+            # geojson_data = file.read()
+            # geometry = shape(json.loads(geojson_data)['geometry'])
+
+            with open(file_path) as f:
+                gj = geojson.load(f)
+            features = gj['features'][0]
+
+            shapely_geometry = shape(features["geometry"])
+            wkt_geometry = shapely_geometry.wkt
+
+            geo_file = GeoFile(filename=filename, geometry=wkt_geometry)
+
+            # project.geo_files.append(geo_file)
+            project.geo_files = geo_file
+            db.session.add(geo_file)
+            db.session.commit()
+
             return redirect(url_for('update_project', project_id=project_id))
         
         elif not allowed_file(file.filename):
