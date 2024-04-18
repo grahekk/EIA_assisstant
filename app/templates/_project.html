@@ -7,8 +7,18 @@
             </a>
         </td>
         <td>{{ project.description }}</td>
-        <td>{{ project.lat|round(2) }}</td>
+        {%if project.lat%}
+            <td>{{ project.lat|round(2) }}</td>
+
+        {% else %}
+            <td> None </td>
+        {%endif%}
+
+        {%if project.lon%}
         <td>{{ project.lon|round(2) }}</td>
+        {% else %}
+        <td> None </td>
+        {%endif%}
         <td>{{ project.date_created }}</td>
         <td>{{ project.project_type }}</td>
         </tr>
