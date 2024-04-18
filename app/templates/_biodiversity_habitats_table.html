@@ -1,0 +1,27 @@
+<table class="table table-bordered dataTable" id="dataTable" width="70%" cellspacing="0" role="grid"
+aria-describedby="dataTable_info" style="width: 70%;">
+    <thead>
+        <tr role="row">
+            <th class="sorting sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1"
+                colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending"
+                style="width: 57.2px;">
+                Kod prema NKS</th>
+            <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1"
+                aria-label="Position: activate to sort column ascending" style="width: 61.2px;">
+                Naziv prema NKS</th>
+            <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1"
+                aria-label="Office: activate to sort column ascending" style="width: 49.2px;">
+                Gubitak površine staništa</th>
+        </tr>
+    </thead>
+        <tbody>
+            {% for row in project.chapters[2].impact %}
+            <tr class="odd">
+                {% for r in row %}
+
+                <td class="sorting_1">{{r}}</td>
+                {%endfor%}
+            </tr>
+            {%endfor%}
+        </tbody>
+</table>
