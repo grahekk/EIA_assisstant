@@ -8,7 +8,7 @@ from geoalchemy2 import Geometry
 from geoalchemy2.shape import to_shape
 from shapely.geometry import mapping
 from sqlalchemy import func, create_engine, MetaData, Table, Column, Integer, Text, ForeignKey
-from sqlalchemy.orm import sessionmaker, relationship
+from sqlalchemy.orm import sessionmaker, relationship, Mapped
 import multiprocessing
 from datetime import date
 
@@ -123,7 +123,6 @@ def get_mab_cro(data):
     mab = session.query(cro_bio_mab_3765.c.naziv, cro_bio_mab_3765.c.zona).filter(cro_bio_mab_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
     return mab
 
-
 def get_zpp_points(data):
     result = session.query(cro_bio_zpp_points_3765.c.kategorija,
                            cro_bio_zpp_points_3765.c.naziv_akt,
@@ -168,6 +167,15 @@ def get_osm_rivers_polygons(data):
     result = session.query(osm_rivers_polygons_3765.c.name, func.ST_Distance(osm_rivers_polygons_3765.c.geom, func.ST_Transform(data.wkt,
     'EPSG: 4326', 3765)).label('distance')).filter(osm_rivers_polygons_3765.c.geom.intersects(func.ST_transform(data.wkt, 'EPSG: 4326', 3765))).all()
     return result
+
+def get_habitat_loss(geo_file):
+    intersection_query = session.query(cro_bio_habitats_2016_3765.c.nks1,
+                                       cro_bio_habitats_2016_3765.c.nks1_naziv, 
+                                       func.round(func.sum(func.ST_Area(func.ST_Intersection(cro_bio_habitats_2016_3765.c.geom, 
+                                                                                  func.ST_Transform(geo_file.geometry, 'EPSG:4326', 3765)))))).filter(func.ST_Intersects(cro_bio_habitats_2016_3765.c.geom, 
+                                                                                                                                                           func.ST_Transform(geo_file.geometry, 'EPSG:4326', 3765))).group_by(cro_bio_habitats_2016_3765.c.nks1,
+                                                                                                                                                                                                               cro_bio_habitats_2016_3765.c.nks1_naziv).all()
+    return intersection_query
 
 
 def query_all(data):
@@ -277,6 +285,8 @@ class Project(db.Model):
     date_created = db.Column(db.DateTime, index=True, default=datetime.now())
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     impact = db.Column(db.String(20000))
+    geo_files: Mapped["GeoFile"] = relationship(back_populates="project")
+
 
     def __init__(self, project_title, description, project_type, lat, lon, user_id):
         self.project_title = project_title
@@ -287,7 +297,7 @@ class Project(db.Model):
         self.point = create_point(self.lat, self.lon)
         self.chapters = None
         # self.chapters = db.relationship('Chapter', backref='author', lazy='dynamic')
-        self.geo_file = None
+        self.geo_files = None
         self.user_id = user_id
         # self.query_birds_table()
         # self.get_description()
@@ -429,6 +439,7 @@ class BiodiversityChapter(Chapter):
         self.lon = lon
         self.project_title = project_title
         self.project_type = project_type
+        self.project_id = project_id
         self.point = create_point(lat, lon)
 
         # specific
@@ -438,6 +449,14 @@ class BiodiversityChapter(Chapter):
         self.table = get_habitats_2016(self.point)
         self.bioregion = text_templates["biodiversity_bioregion"]
         self.description = self.get_habitat_description()
+        self.impact = self.get_surface_loss()
+
+    def get_surface_loss(self):
+        project = Project.query.filter_by(id=self.project_id).first_or_404()
+        if project.geo_files:
+            return get_habitat_loss(project.geo_files)
+        else:
+            return None
 
     def get_habitat_description(self):
         # biodiversity_description = f"The habitats found on site of {self.project_title} are charasteristic for {self.bioregion} biogeoregion"
@@ -581,9 +600,11 @@ def load_user(id):
 class GeoFile(db.Model):
     __tablename__ = 'geo_files'
 
+    # keys
     id = Column(Integer, primary_key=True)
-    project_id = Column(Integer, ForeignKey('project.id'))
-    project = relationship("Project", back_populates="geo_files")
+    project_id: Mapped[int] = Column(Integer, ForeignKey('project.id'))
+    project: Mapped["Project"] = relationship("Project", back_populates="geo_files")
+
     filename = Column(Text)
     geometry = Column(Geometry('GEOMETRY'))
 
