@@ -41,6 +41,12 @@ report_choices = [
     ('Climate risk report', 'Climate risk report')
 ]
 
+geolocation_choices = [
+    ('Pick a point', 'Pick a point'),
+    ('Draw a polygon', 'Draw a polygon'),
+    ('Upload geo file', 'Upload geo file')
+]
+
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
@@ -125,4 +131,8 @@ class UploadForm(FlaskForm):
 class DeleteProjectForm(FlaskForm):
     submit = SubmitField('Delete project')
 
+
+class GeolocationForm(FlaskForm):
+    geolocation_option = SelectField('Select where you want to locate your project', choices=geolocation_choices)
+    submit = SubmitField('Get the location')
 
