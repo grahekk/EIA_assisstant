@@ -16,6 +16,7 @@ from urllib.parse import urlsplit
 from .tools.geoanalysis import get_geodataframe_for_point, create_point
 from .tools.plot_map import export_map_with_shapefile
 from .tools.report_creation import create_report
+from .tools.docx_report import report_from_docx_template
 import os
 import yaml
 
@@ -396,25 +397,90 @@ def download_report(project_id):
     #get table
     # project.birds = project.query_birds_table()
     #get shape for map
+    natura_chapter = NaturaChapter(project.project_title,
+                                       project.project_type,
+                                       project_id,
+                                       project.lat,
+                                       project.lon)
+    natura_chapter.table_columns = ["latin", "croatian", "status_g", "status_p", "status_z"]
+    
+    administrative_chapter = AdministrativeChapter(project.project_title,
+                                                project.project_type,
+                                                project_id,
+                                                project.lat, 
+                                                project.lon)
+    
+            
+    biodiversity_chapter = BiodiversityChapter(project.project_title,
+                                                project.project_type,
+                                                project_id,
+                                                project.lat, 
+                                                project.lon)
+    
+    
+    protected_areas_chapter = ProtectedAreasChapter(project.project_title,
+                                                project.project_type,
+                                                project_id,
+                                                project.lat, 
+                                                project.lon)
+    protected_areas_chapter.table_columns = ["kategorija", "naziv", "udaljenost"]
+    
+    
+    forest_chapter = ForestChapter(project.project_title,
+                                    project.project_type,
+                                    project_id,
+                                    project.lat, 
+                                    project.lon)
+    
+    landscape_chapter = LandscapeChapter(project.project_title,
+                            project.project_type,
+                            project_id,
+                            project.lat, 
+                            project.lon)
+    
+    hidrology_chapter = HidrologyChapter(project.project_title,
+                            project.project_type,
+                            project_id,
+                            project.lat, 
+                            project.lon)
+    
+    climate_chapter = ClimateChapter(project.project_title,
+                            project.project_type,
+                            project_id,
+                            project.lat, 
+                            project.lon)
+    
+    project.chapters = [administrative_chapter, 
+                        natura_chapter, 
+                        biodiversity_chapter, 
+                        protected_areas_chapter, 
+                        hidrology_chapter, 
+                        forest_chapter, 
+                        # landscape_chapter, 
+                        climate_chapter]
+
+
+
     pop_gdf = get_geodataframe_for_point(project.lat, project.lon, session)
     # create map image for report
     image_path = "map_image.jpg"
     export_map_with_shapefile(project.lat, project.lon, gdf = pop_gdf, file_path = image_path)
     report = "report.docx"
+    report_from_docx_template(project, report) 
     # TODO: do the temporary directory for storing reports (tempfile)
     #create report
-    natura_chapter = NaturaChapter(project.project_title,
-                                        project.project_type,
-                                        project_id,
-                                        project.lat,
-                                        project.lon)
+    # natura_chapter = NaturaChapter(project.project_title,
+    #                                     project.project_type,
+    #                                     project_id,
+    #                                     project.lat,
+    #                                     project.lon)
 
 
-    create_report(project.project_title, 
-                  project.impact, 
-                  natura_chapter.table,
-                  image_path, 
-                  report)
+    # create_report(project.project_title, 
+    #               project.impact, 
+    #               natura_chapter.table,
+    #               image_path, 
+    #               report)
 
 
     return send_file(os.path.abspath(report))
