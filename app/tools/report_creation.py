@@ -1,4 +1,3 @@
-from app import db
 import geopandas as gpd, fiona
 from shapely.geometry import Point
 import pyproj
@@ -7,9 +6,6 @@ from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from docx.shared import Pt, Inches
 import markdown2
 import pypandoc
-
-import matplotlib.pyplot as plt
-
 
 # fiona.drvsupport.supported_drivers['kml'] = 'rw' 
 # fiona.drvsupport.supported_drivers['KML'] = 'rw' 
