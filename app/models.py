@@ -346,11 +346,17 @@ class NaturaChapter(Chapter):
             self.site_code = None
             self.site_name = None
 
-        self.description = self.get_description()
         self.impact = self.assess_impact()
 
         self.table_description = text_templates["natura2000_birds_table_description"]
         self.table = self.query_birds_table()
+
+        if not self.table:
+            self.description = text_templates["natura2000_no_description"]
+        else:
+            self.description = self.get_description()
+
+        self.table_columns = ["latin", "croatian", "status_g", "status_p", "status_z"]
 
 
         self.table_habitats = get_natura_povs(self.point)
@@ -392,7 +398,11 @@ class ProtectedAreasChapter(Chapter):
         self.heading = text_templates["protected_areas_heading"]
         self.table_description = text_templates["protected_areas_table_description"]
         self.table = get_zpp_polygons(self.point)
-        self.description = self.get_zpp_description()
+        if not self.table:
+            self.description = text_templates["protected_areas_no_description"]
+        else:
+            self.description = self.get_zpp_description()
+        self.table_columns = ["kategorija", "naziv", "udaljenost"]
 
     def get_zpp_description(self):
         # protected_areas_description = f"Development project called {self.project_title} is located in some protected areas"
@@ -418,6 +428,7 @@ class AdministrativeChapter(Chapter):
         self.heading = text_templates["administrative_heading"]
         self.administrative_zones = get_administrative_cro(self.point)[0][0]
         self.description = self.get_topological_description()
+        self.table = None
 
 
     def get_topological_description(self):
@@ -447,9 +458,12 @@ class BiodiversityChapter(Chapter):
         self.table_meta = text_templates["biodiversity_table_meta"]
         self.table_description = text_templates["biodiversity_table_description"]
         self.table = get_habitats_2016(self.point)
+        self.table_columns = ["NKS kod", "naziv"]
+
         self.bioregion = text_templates["biodiversity_bioregion"]
         self.description = self.get_habitat_description()
         self.impact = self.get_surface_loss()
+        self.impact_table_columns = ["NKS kod", "naziv", "Gubitak povrs"]
 
     def get_surface_loss(self):
         project = Project.query.filter_by(id=self.project_id).first_or_404()
@@ -516,7 +530,8 @@ class ClimateChapter(Chapter):
         self.heading = text_templates["climate_heading"]
         self.climate_zones = "CLimate zones are Abcdf"
         self.description = self.get_climate_description()
-            
+        self.table = None
+
     def get_climate_description(data):
         return climate_analysis_of_probability.result_text
     
@@ -554,12 +569,15 @@ class HidrologyChapter(Chapter):
 
         # specific
         self.heading = text_templates["hidrology_heading"]
-        self.table = get_esri_water_bodies(self.point)
+        self.distance = get_esri_water_bodies(self.point)[0]
         self.description = self.get_hidrology_description()
+        self.table = None
 
     def get_hidrology_description(self):
         variables = {
-            "project_title": self.project_title
+            "project_title": self.project_title,
+            "water_body": self.distance[0],
+            "distance": round(self.distance[2], 2)
         }
 
         hidrology_description = text_templates["hidrology_description"]
