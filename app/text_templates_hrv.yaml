@@ -10,9 +10,11 @@ protected_areas: "Zaštićeno područje '{name}' kategorije '{category}' udaljen
 protected_areas_heading: "Zaštićena područja"
 protected_areas_table_description: "Zaštićena područja"
 protected_areas_description: "Razvojni projekt pod nazivom {project_title} nalazi se u nekim zaštićenim područjima"
+protected_areas_no_description: "Razvojni projekt ne nalazi se uopće na području Zaštićenih područja prirode prema Zakonu o zaštiti prirode (NN 2019)"
 
 natura2000_heading: "Zaštićena područja Natura2000"
 natura2000_birds_table_description: "Sljedeće vrste ptica bile bi ugrožene: "
+natura2000_no_description: "Predmetni zahvat ne nalazi se uopće na Natura području očuvanja značajnih za ptice (POP)"
 
 natura2000_habitats: "Stanište Natura 2000 '{name}' s kodom '{code}' udaljeno je {distance}."
 
@@ -39,7 +41,8 @@ geology_heading: "Geologija, reljef i tla"
 
 climate_heading: "Klima"
 hidrology_heading: "Hidrologija i vodena tijela"
-hidrology_description: "U blizini razvojnog projekta {project_title} nalaze se vodena tijela, u tablici je prikazano neko vodeno tijelo, njegova kategorija i udaljenost"
+hidrology_description: "U blizini razvojnog projekta {project_title} nalaze se vodena tijela, u tablici je prikazano neko vodeno tijelo, njegova kategorija i udaljenost.
+            I to rijeka {water_body} na udaljenosti od {distance} metara"
 
 landscape_heading: "Krajolik"
 landscape_type: "pitoreskan"
