@@ -65,8 +65,9 @@ def add_chapter(doc, chapter):
 
         # Add table
         try:
-            # doc.add_table(chapter.table, chapter.table_columns)
+            doc.add_paragraph(f"Tablica: zahvat i {chapter.heading}", style = "DE_Tablica CAPTION")
             add_chapters_table(doc, chapter)
+            doc.add_paragraph(chapter.table_source, style = 'Izvor')
         except ValueError:
             # Handle if table data is empty or invalid
             doc.add_paragraph("Table data is missing or invalid.")
