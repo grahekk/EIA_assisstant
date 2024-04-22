@@ -2,7 +2,7 @@ from flask import render_template, flash, redirect, url_for, request, send_file,
 from flask_login import current_user, login_user, logout_user, login_required
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, PostForm, EmptyForm, ContactForm, NewProjectForm, EditProjectForm, DeleteProjectForm, GeolocationForm
-from app.models import User, Post, Questions, Project, query_all, NaturaChapter, AdministrativeChapter, BiodiversityChapter, ForestChapter, LandscapeChapter, ProtectedAreasChapter, HidrologyChapter, ClimateChapter, session, GeoFile
+from app.models import User, Post, Questions, Project, query_all, NaturaChapter, AdministrativeChapter, BiodiversityChapter, ForestChapter, LandscapeChapter, ProtectedAreasChapter, HidrologyChapter, ClimateChapter, session, GeoFile, Chapter
 from sqlalchemy.sql import text
 from geoalchemy2.functions import ST_AsText, ST_Transform
 from werkzeug.utils import secure_filename
@@ -432,11 +432,11 @@ def download_report(project_id):
                                     project.lat, 
                                     project.lon)
     
-    landscape_chapter = LandscapeChapter(project.project_title,
-                            project.project_type,
-                            project_id,
-                            project.lat, 
-                            project.lon)
+    # landscape_chapter = LandscapeChapter(project.project_title,
+    #                         project.project_type,
+    #                         project_id,
+    #                         project.lat, 
+    #                         project.lon)
     
     hidrology_chapter = HidrologyChapter(project.project_title,
                             project.project_type,
@@ -450,6 +450,14 @@ def download_report(project_id):
                             project.lat, 
                             project.lon)
     
+    impact_chapter = Chapter(project_id,
+                             "Utjecaj na sastavnice okoliša",
+                             project.impact,
+                             "",
+                             biodiversity_chapter.impact,
+                             biodiversity_chapter.impact_description,
+                             "image", "")
+    
     project.chapters = [administrative_chapter, 
                         natura_chapter, 
                         biodiversity_chapter, 
@@ -457,7 +465,8 @@ def download_report(project_id):
                         hidrology_chapter, 
                         forest_chapter, 
                         # landscape_chapter, 
-                        climate_chapter]
+                        climate_chapter,
+                        impact_chapter]
 
 
 
