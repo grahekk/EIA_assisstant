@@ -310,7 +310,7 @@ class Project(db.Model):
     
 
 class Chapter():
-    def __init__(self, project_id, heading, description, impact, table, table_description, image, source) -> None:
+    def __init__(self, project_id, heading, description, impact, table, table_description, image, table_source) -> None:
         # TODO: One-to-many relationship between project and chapters
         self.project_id = project_id
         self.heading = heading
@@ -319,7 +319,7 @@ class Chapter():
         self.table = table
         self.table_description = table_description
         self.image = image
-        self.source = source
+        self.table_source = table_source
         self.query = None
         pass
 
@@ -349,7 +349,7 @@ class NaturaChapter(Chapter):
 
         self.impact = self.assess_impact()
 
-        self.table_source = "Izvor: Uredba o ekološkoj mreži (NN 80/19)"
+        self.table_source = text_templates["natura2000_table_source"]
         self.table_description = text_templates["natura2000_birds_table_description"]
         self.table = self.query_birds_table()
 
@@ -399,6 +399,7 @@ class ProtectedAreasChapter(Chapter):
         # specific
         self.heading = text_templates["protected_areas_heading"]
         self.table_description = text_templates["protected_areas_table_description"]
+        self.table_source = text_templates["protected_areas_table_source"]
         self.table = get_zpp_polygons(self.point)
         if not self.table:
             self.description = text_templates["protected_areas_no_description"]
@@ -409,7 +410,8 @@ class ProtectedAreasChapter(Chapter):
     def get_zpp_description(self):
         # protected_areas_description = f"Development project called {self.project_title} is located in some protected areas"
         variables = {
-            'project_title': self.project_title
+            'project_title': self.project_title,
+            'count_protec': len(self.table)
         }
         protected_areas_description = text_templates["protected_areas_description"]
         protected_areas_description = protected_areas_description.format(**variables)
@@ -457,9 +459,9 @@ class BiodiversityChapter(Chapter):
 
         # specific
         self.heading = text_templates["biodiversity_heading"]
-        self.table_meta = text_templates["biodiversity_table_meta"]
         self.table_description = text_templates["biodiversity_table_description"]
         self.table = get_habitats_2016(self.point)
+        self.table_source = text_templates["biodiversity_table_source"]
         self.table_columns = ["NKS kod", "naziv"]
 
         self.bioregion = text_templates["biodiversity_bioregion"]
@@ -476,7 +478,6 @@ class BiodiversityChapter(Chapter):
             return None
 
     def get_habitat_description(self):
-        # biodiversity_description = f"The habitats found on site of {self.project_title} are charasteristic for {self.bioregion} biogeoregion"
         variables = {
             "project_title": self.project_title,
             "bioregion": self.bioregion
@@ -500,8 +501,8 @@ class ForestChapter(Chapter):
 
         # specific
         self.heading = text_templates["forests_heading"]
-        self.table_meta = text_templates["forests_table_meta"]
-        self.table_description = text_templates["forests_table_description"].format(**{"table_meta":self.table_meta})
+        self.table_source = text_templates["forests_table_source"]
+        self.table_description = text_templates["forests_table_description"]
 
         self.forest_gj = get_forest_private_gj(self.point)[0]
         self.table = get_forest_private_unit(self.point)
