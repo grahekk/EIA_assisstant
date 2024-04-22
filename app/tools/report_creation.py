@@ -52,17 +52,11 @@ def natura_impact_assessment(lat, lon, project_title, project_type):
            
            Projekt bi mogao imati utjecaja na neke sastavnice okoliša, tipa na lokalni ekosustav, populacije divljači i ptica.
             Neki od potencijalnih utjecaja su:
-            
              1. Uništavanje staništa: Razvoj može dovesti do uništenja prirodnih staništa, utječući na lokalnu floru i faunu.
-            
              2. Ometanje migracije divljih životinja: Ako se projekt nalazi duž migracijskih ruta, mogao bi poremetiti prirodne obrasce migracije ptica i drugih životinja.
-            
              3. Zagađenje bukom: Građevinske aktivnosti mogu pridonijeti zagađenju bukom, što može uznemiriti vrste ptica koje se oslanjaju na akustične signale za komunikaciju i navigaciju.
-            
              4. Onečišćenje zraka i vode: Ovisno o prirodi projekta, može doći do emisija i otjecanja koji mogu zagaditi zrak i vodu, utječući i na kopnene i na vodene vrste ptica.
-            
              5. Rizici od sudara: Visoke strukture poput tornjeva ili vjetroturbina predstavljaju rizik od sudara za ptice. Neophodno je procijeniti i ublažiti ove rizike kako bi se zaštitile populacije ptica.
-            
              6. Uvođenje invazivnih vrsta: Građevinske aktivnosti mogu uvesti invazivne vrste, ponajviše flore koje bi mogle ući u kompeticiju s autohtonom florom.
             
              Ključno je donijeti odgovarajuće mjere zaštite okoliša te provesti temeljita istraživanja kako bi se negativne posljedice svele na minimum. 
