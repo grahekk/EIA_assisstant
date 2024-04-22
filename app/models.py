@@ -310,13 +310,14 @@ class Project(db.Model):
     
 
 class Chapter():
-    def __init__(self, project_id, heading, description, impact, table, image, source) -> None:
+    def __init__(self, project_id, heading, description, impact, table, table_description, image, source) -> None:
         # TODO: One-to-many relationship between project and chapters
         self.project_id = project_id
         self.heading = heading
         self.description = description
         self.impact = impact
         self.table = table
+        self.table_description = table_description
         self.image = image
         self.source = source
         self.query = None
@@ -348,6 +349,7 @@ class NaturaChapter(Chapter):
 
         self.impact = self.assess_impact()
 
+        self.table_source = "Izvor: Uredba o ekološkoj mreži (NN 80/19)"
         self.table_description = text_templates["natura2000_birds_table_description"]
         self.table = self.query_birds_table()
 
@@ -464,6 +466,7 @@ class BiodiversityChapter(Chapter):
         self.description = self.get_habitat_description()
         self.impact = self.get_surface_loss()
         self.impact_table_columns = ["NKS kod", "naziv", "Gubitak povrs"]
+        self.impact_description = text_templates["biodiversity_impact_description"]
 
     def get_surface_loss(self):
         project = Project.query.filter_by(id=self.project_id).first_or_404()
@@ -502,6 +505,7 @@ class ForestChapter(Chapter):
 
         self.forest_gj = get_forest_private_gj(self.point)[0]
         self.table = get_forest_private_unit(self.point)
+        self.table_columns = ["Odjel", "Odsjek", "Površina", "Udaljenost"]
         self.description = self.get_forestry_description()
 
     def get_forestry_description(self) -> str:
