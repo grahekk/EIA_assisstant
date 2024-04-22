@@ -21,7 +21,7 @@ natura2000_habitats: "Stanište Natura 2000 '{name}' s kodom '{code}' udaljeno j
 natura2000_birds: "Ptica Natura 2000 '{name}' s kodom '{code}' udaljena je {distance}."
 
 forests_heading: "Šume"
-forests_description: "Na rubovima {project_title} nalaze se neke šume.
+forests_description: "Na rubovima zahvata pod nazivom {project_title} nalaze se neke šume.
 Prema teritorijalnoj podjeli, privatne šume nalaze se u {forest_gj}"
 forest_stands: "Šumski stoj {type} u jedinici '{forest_unit}', u vlasništvu '{ownership}', udaljen je {distance}."
 forests_table_meta: "WMS, Ministarstvo poljoprivrede"
@@ -36,6 +36,7 @@ biodiversity_table_meta: "karta staništa, 2016"
 biodiversity_table_description: "Sljedeća staništa pronađena na lokaciji projekta opisana su u tablici "
 biodiversity_bioregion: "Kontinentalno"
 biodiversity_description: "Staništa pronađena na lokaciji {project_title} karakteristična su za {bioregion} biogeoregion"
+biodiversity_impact_description: "U sljedećoj tablici prikazani su potencijalni gubitci staništa na predmetnoj lokaciji"
 
 geology_heading: "Geologija, reljef i tla"
 
