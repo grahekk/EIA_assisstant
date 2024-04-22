@@ -26,7 +26,7 @@ def get_geodataframe_for_point(lat, lon, session):
         WHERE ST_DWithin(
             geom,
             ST_Transform(ST_SetSRID(ST_MakePoint({lon}, {lat}), 4326),3765),
-            5000
+            10000
         )
         LIMIT 1;
     """
