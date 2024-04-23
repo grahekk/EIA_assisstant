@@ -456,7 +456,9 @@ def download_report(project_id):
                              "",
                              biodiversity_chapter.impact,
                              biodiversity_chapter.impact_description,
-                             "image", "")
+                             biodiversity_chapter.impact_table_columns,
+                             biodiversity_chapter.impact_caption,
+                             "output/gubitci_stanista_chart.png", "")
     
     project.chapters = [administrative_chapter, 
                         natura_chapter, 
@@ -470,7 +472,7 @@ def download_report(project_id):
 
 
 
-    pop_gdf = get_geodataframe_for_point(project.lat, project.lon, session)
+    pop_gdf = get_geodataframe_for_point(project.lat, project.lon, 'pop', session)
     # create map image for report
     image_path = "map_image.jpg"
     export_map_with_shapefile(project.lat, project.lon, gdf = pop_gdf, file_path = image_path)
