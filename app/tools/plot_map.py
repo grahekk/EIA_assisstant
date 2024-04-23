@@ -44,7 +44,7 @@ def export_map_with_shapefile(lat, lon, zoom=15, basemap='OpenStreetMap', file_p
         my_map.fit_bounds(gdf_box.bounds, max_zoom=18)
 
     else:
-        print("gdf is empty!")
+        print("Folium map gdf is empty!")
 
     # Save the map as an HTML file
     with tempfile.TemporaryDirectory() as tmp:
