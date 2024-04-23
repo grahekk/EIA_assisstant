@@ -18,11 +18,11 @@ def create_point(lat, lon):
 
     return transformed_point
 
-def get_geodataframe_for_point(lat, lon, session):
+def get_geodataframe_for_point(lat, lon, table, session):
     # Define the query to retrieve data within 5 kilometers of the given point
     query = f"""
         SELECT ST_GeometryN(geom, generate_series(1, ST_NumGeometries(geom))) AS geom_polygon
-        FROM data.pop
+        FROM data.{table}
         WHERE ST_DWithin(
             geom,
             ST_Transform(ST_SetSRID(ST_MakePoint({lon}, {lat}), 4326),3765),
