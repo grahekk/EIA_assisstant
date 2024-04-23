@@ -22,7 +22,6 @@ def update_existing_section(doc, project, chapter):
         table.alignment = WD_TABLE_ALIGNMENT.CENTER
 
         for col in range(len(chapter.table_columns)):
-            print(chapter.table_columns[col])
             table.cell(0, col).text = chapter.table_columns[col]
         for row_data in chapter.table[0:len(chapter.table)-1]:
             row = table.add_row().cells
@@ -82,7 +81,7 @@ def add_chapter(doc, chapter):
             doc.add_paragraph(f"Slika: Prikaz gubitaka staništa na tortnom grafu")
             last_paragraph = doc.paragraphs[-1] 
             last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-            
+
     except Exception as e:
         print(f"Image was skipped because {e}")
 
