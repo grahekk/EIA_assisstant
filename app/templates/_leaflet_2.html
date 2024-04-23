@@ -1,0 +1,14 @@
+<div id="map" style="height: 400px;">
+    
+    {% if project.geojson_data %}
+
+    <script type="text/javascript">
+        var geojson_data = {{ project.geojson_data|safe }}
+    </script>
+    <script src="{{ url_for('static', filename='leaflet/map_2.js') }}" ></script>
+    
+    {%else%}
+    <script src="{{ url_for('static', filename='leaflet/map.js') }}" ></script>
+    {%endif%}
+
+</div>
