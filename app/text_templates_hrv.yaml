@@ -8,7 +8,8 @@ water_bodies: "Vodeno tijelo tipa {type} nazvano {name} udaljeno je {distance} o
 
 protected_areas: "Zaštićeno područje '{name}' kategorije '{category}' udaljeno je {distance}."
 protected_areas_heading: "Zaštićena područja"
-protected_areas_table_description: "Zaštićena područja"
+protected_areas_table_description: "Sljedeća zaštićena područja mogu se naći na širem području"
+protected_areas_table_caption: "Tablica: Zaštićena područja na području obuhvata zahvata"
 protected_areas_description: "Razvojni projekt pod nazivom {project_title} nalazi se na {count_protec} zaštićenih područja prirode sukladno čl. 111. Zakona o zaštiti prirode (NN 80/13, 15/18, 14/19, 127/19), "
 protected_areas_no_description: "Razvojni projekt ne nalazi se uopće na području Zaštićenih područja prirode prema Zakonu o zaštiti prirode (NN 2019)"
 protected_areas_table_source: "Izvor: WFS Informacijskog sustava zaštite prirode (www.bioportal.hr)"
@@ -19,6 +20,8 @@ natura2000_no_description: "Predmetni zahvat ne nalazi se uopće na Natura podru
 
 natura2000_habitats: "Stanište Natura 2000 '{name}' s kodom '{code}' udaljeno je {distance}."
 natura2000_table_source: "Izvor: Uredba o ekološkoj mreži (NN 80/19)"
+natura2000_table_caption: "Tablica: Područja ekološke mreže na širem obuhvatu zahvata"
+natura2000_table_description: "U sljedećoj tablici može se naći popis ptica značajnih za predmetni POP"
 natura2000_birds: "Ptica Natura 2000 '{name}' s kodom '{code}' udaljena je {distance}."
 
 forests_heading: "Šume"
@@ -27,6 +30,7 @@ Prema teritorijalnoj podjeli, privatne šume nalaze se u {forest_gj}"
 forest_stands: "Šumski stoj {type} u jedinici '{forest_unit}', u vlasništvu '{ownership}', udaljen je {distance}."
 forests_table_source: "Izvor: WMS Ministarstva poljoprivrede"
 forests_table_description: "Lokacija projekta blizu je šumskih odsjeka privatnih šuma navedenih u tablici. Izvor je wfs ministarstva poljoprivrede : "
+forests_table_caption: "Tablica: Prikaz najbližih šumskih odsjeka privatnih šuma na području obuhvata zahvata"
 
 administrative: "Grad pod nazivom {town_name} dio je lokacije projekta."
 administrative_heading: "Administrativne zone"
@@ -35,9 +39,11 @@ administrative_description: "{administrative_zones} je administrativno područje
 biodiversity_heading: "Bioraznolikost i staništa"
 biodiversity_table_source: "Bardi, A.; Papini, P.; Quaglino, E.; Biondi, E.; Topić, J.; Milović, M; Pandža, M.; Kaligarič, M.; Oriolo, G.; Roland, V.; Batina, A.; Kirin, T. (2016): Karta prirodnih i poluprirodnih ne-šumskih kopnenih i slatkovodnih staništa Republike Hrvatske. AGRISTUDIO s.r.l., TEMI S.r.l., TIMESIS S.r.l., HAOP."
 biodiversity_table_description: "Sljedeća staništa pronađena na lokaciji projekta opisana su u tablici "
+biodiversity_table_caption: "Tablica: prikaz staništa prema NKS na obuhvatu zahvata "
 biodiversity_bioregion: "kontinentalnu Hrvatsku"
 biodiversity_description: "Prema dostupnoj Karti nešumskih kopnenih staništa  (www.bioportal.hr), na području obuhvaza zahvata {project_title} nalaze se sljedeći stanišni tipovi, a karakteristični za {bioregion}"
 biodiversity_impact_description: "U sljedećoj tablici prikazani su potencijalni gubitci staništa na predmetnoj lokaciji"
+biodiversity_impact_caption: "Tablica: Gubitci staništa"
 
 geology_heading: "Geologija, reljef i tla"
 
