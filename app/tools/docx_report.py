@@ -1,6 +1,7 @@
 from docx import Document
 from docx.shared import Pt, Inches
 from docx.enum.table import WD_TABLE_ALIGNMENT
+from docx.enum.text import WD_ALIGN_PARAGRAPH
 
 def update_existing_section(doc, project, chapter):
     # Access the first paragraph and modify its text and formatting
@@ -65,12 +66,25 @@ def add_chapter(doc, chapter):
 
         # Add table
         try:
-            doc.add_paragraph(f"Tablica: zahvat i {chapter.heading}", style = "DE_Tablica CAPTION")
+            doc.add_paragraph(chapter.table_caption, style = "DE_Tablica CAPTION")
             add_chapters_table(doc, chapter)
             doc.add_paragraph(chapter.table_source, style = 'Izvor')
         except ValueError:
             # Handle if table data is empty or invalid
             doc.add_paragraph("Table data is missing or invalid.")
+
+    try:
+        if chapter.image:
+            doc.add_picture(chapter.image, width=Inches(5.0))
+            last_paragraph = doc.paragraphs[-1] 
+            last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+            doc.add_paragraph(f"Slika: Prikaz gubitaka staništa na tortnom grafu")
+            last_paragraph = doc.paragraphs[-1] 
+            last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            
+    except Exception as e:
+        print(f"Image was skipped because {e}")
 
 def report_from_docx_template(project, report):
     # Open an existing document
