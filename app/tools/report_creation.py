@@ -47,11 +47,7 @@ def check_intersection(lat, lon):
 def natura_impact_assessment(lat, lon, project_title, project_type):
 #     bird_data = "birds.csv"
 #     bird_data = query_points_within_polygon(lat, lon)
-    text = f"""Predmetni zahvat za koji se provodi postupak PUO/OPP, '{project_title}' se nalazi na koordinatama {round(lat, 3)}, {round(lon,3)}.
-           Budući da je to projekt tipa {project_type}, i podliježe procjeni prema Pravilniku o Procjeni utjecaja na okoliš (NN, 2019) bitno je razmotriti potencijalne utjecaje na okoliš.
-           
-           Projekt bi mogao imati utjecaja na neke sastavnice okoliša, tipa na lokalni ekosustav, populacije divljači i ptica.
-            Neki od potencijalnih utjecaja su:
+    text = f"""Predmetni zahvat za koji se provodi postupak PUO/OPP, '{project_title}' se nalazi na koordinatama {round(lat, 3)}, {round(lon,3)}. Budući da je to projekt tipa {project_type}, i podliježe procjeni prema Pravilniku o Procjeni utjecaja na okoliš (NN, 2019) bitno je razmotriti potencijalne utjecaje na okoliš. Projekt bi mogao imati utjecaja na neke sastavnice okoliša, tipa na lokalni ekosustav, populacije divljači i ptica. Neki od potencijalnih utjecaja su:
              1. Uništavanje staništa: Razvoj može dovesti do uništenja prirodnih staništa, utječući na lokalnu floru i faunu.
              2. Ometanje migracije divljih životinja: Ako se projekt nalazi duž migracijskih ruta, mogao bi poremetiti prirodne obrasce migracije ptica i drugih životinja.
              3. Zagađenje bukom: Građevinske aktivnosti mogu pridonijeti zagađenju bukom, što može uznemiriti vrste ptica koje se oslanjaju na akustične signale za komunikaciju i navigaciju.
@@ -60,7 +56,6 @@ def natura_impact_assessment(lat, lon, project_title, project_type):
              6. Uvođenje invazivnih vrsta: Građevinske aktivnosti mogu uvesti invazivne vrste, ponajviše flore koje bi mogle ući u kompeticiju s autohtonom florom.
             
              Ključno je donijeti odgovarajuće mjere zaštite okoliša te provesti temeljita istraživanja kako bi se negativne posljedice svele na minimum. 
-
              Razmatranje svih čimbenika ključno je za održivi razvoj, time se osigurava da projekt minimalizira svoj okolišni otisak i očuva biološku raznolikost."""
             
     return text

@@ -74,11 +74,12 @@ def add_chapter(doc, chapter):
 
     try:
         if chapter.image:
+            doc.add_paragraph("Gubitci staništa mogu se prikazati i grafički, na tortnom grafu pa u nastavku slijedi i takav pristup prikazu izračuna")
             doc.add_picture(chapter.image, width=Inches(5.0))
             last_paragraph = doc.paragraphs[-1] 
             last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-            doc.add_paragraph(f"Slika: Prikaz gubitaka staništa na tortnom grafu")
+            doc.add_paragraph(f"Slika: Prikaz gubitaka staništa na tortnom grafu", style = "Caption G.Prikazi")
             last_paragraph = doc.paragraphs[-1] 
             last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
