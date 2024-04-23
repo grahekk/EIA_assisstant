@@ -310,7 +310,7 @@ class Project(db.Model):
     
 
 class Chapter():
-    def __init__(self, project_id, heading, description, impact, table, table_description, image, table_source) -> None:
+    def __init__(self, project_id, heading, description, impact, table, table_description, table_columns, table_caption, image, table_source) -> None:
         # TODO: One-to-many relationship between project and chapters
         self.project_id = project_id
         self.heading = heading
@@ -318,6 +318,8 @@ class Chapter():
         self.impact = impact
         self.table = table
         self.table_description = table_description
+        self.table_columns = table_columns
+        self.table_caption = table_caption
         self.image = image
         self.table_source = table_source
         self.query = None
@@ -399,6 +401,7 @@ class ProtectedAreasChapter(Chapter):
         # specific
         self.heading = text_templates["protected_areas_heading"]
         self.table_description = text_templates["protected_areas_table_description"]
+        self.table_caption = text_templates["protected_areas_table_caption"]
         self.table_source = text_templates["protected_areas_table_source"]
         self.table = get_zpp_polygons(self.point)
         if not self.table:
@@ -463,12 +466,14 @@ class BiodiversityChapter(Chapter):
         self.table = get_habitats_2016(self.point)
         self.table_source = text_templates["biodiversity_table_source"]
         self.table_columns = ["NKS kod", "naziv"]
+        self.table_caption = text_templates["biodiversity_table_caption"]
 
         self.bioregion = text_templates["biodiversity_bioregion"]
         self.description = self.get_habitat_description()
         self.impact = self.get_surface_loss()
-        self.impact_table_columns = ["NKS kod", "naziv", "Gubitak povrs"]
+        self.impact_table_columns = ["NKS kod", "Naziv prema NKS", "Gubitak površine staništa"]
         self.impact_description = text_templates["biodiversity_impact_description"]
+        self.impact_caption= text_templates["biodiversity_impact_caption"]
 
     def get_surface_loss(self):
         project = Project.query.filter_by(id=self.project_id).first_or_404()
@@ -503,6 +508,7 @@ class ForestChapter(Chapter):
         self.heading = text_templates["forests_heading"]
         self.table_source = text_templates["forests_table_source"]
         self.table_description = text_templates["forests_table_description"]
+        self.table_caption = text_templates["forests_table_caption"]
 
         self.forest_gj = get_forest_private_gj(self.point)[0]
         self.table = get_forest_private_unit(self.point)
