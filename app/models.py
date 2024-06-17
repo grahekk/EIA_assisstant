@@ -11,6 +11,8 @@ from sqlalchemy import func, create_engine, MetaData, Table, Column, Integer, Te
 from sqlalchemy.orm import sessionmaker, relationship, Mapped
 import multiprocessing
 from datetime import date
+from shapely import wkb
+import geopandas as gpd
 
 from .text_generation import climate_analysis_of_probability
 from .tools.geoanalysis import create_point
@@ -650,3 +652,13 @@ class GeoFile(db.Model):
             },
             "geometry": mapping(to_shape(self.geometry))
         }
+    
+    def as_gdf(self):
+        # Decode the WKB geometry
+        shapely_geom = wkb.loads(bytes(str(self.geometry), encoding='utf-8'), hex=True)
+
+        # Create a GeoDataFrame
+        data = {'geometry': [shapely_geom]}
+        gdf = gpd.GeoDataFrame(data, crs='EPSG:4326')
+
+        return gdf        

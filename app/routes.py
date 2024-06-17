@@ -473,11 +473,18 @@ def download_report(project_id):
 
 
     pop_gdf = get_geodataframe_for_point(project.lat, project.lon, 'pop', session)
+
     # create map image for report
-    image_path = "map_image.jpg"
-    export_map_with_shapefile(project.lat, project.lon, gdf = pop_gdf, file_path = image_path)
+    pop_image_path = "pop_map_image.jpg"
+    project_image_path = "project_map_image.jpg"
+    export_map_with_shapefile(project.lat, project.lon, gdf = pop_gdf, file_path = pop_image_path)
+    if project.geo_files:
+        print("yes, project map is gonna get got")
+        export_map_with_shapefile(project.lat, project.lon, zoom = 7, gdf = project.geo_files.as_gdf(), file_path = project_image_path)
+
     report = "report.docx"
     report_from_docx_template(project, report) 
+
     # TODO: do the temporary directory for storing reports (tempfile)
     #create report
     # natura_chapter = NaturaChapter(project.project_title,

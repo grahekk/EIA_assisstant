@@ -31,7 +31,10 @@ def export_map_with_shapefile(lat, lon, zoom=15, basemap='OpenStreetMap', file_p
     """
     # Create a folium map centered at the given latitude and longitude
     map_center = [lat, lon]
-    my_map = folium.Map(location=map_center, control_scale=True, tiles=basemap)
+    if file_path == "project_map_image":
+        my_map = folium.Map(location=map_center, zoom_start=zoom, control_scale=True, tiles=basemap)
+    else:
+        my_map = folium.Map(location=map_center, control_scale=True, tiles=basemap)
 
     # Add a marker at the specified location
     folium.Marker(location=map_center, popup=f'({lat}, {lon})').add_to(my_map)

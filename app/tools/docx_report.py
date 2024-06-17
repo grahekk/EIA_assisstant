@@ -7,12 +7,17 @@ def update_existing_section(doc, project, chapter):
     # Access the first paragraph and modify its text and formatting
     first_paragraph = doc.paragraphs[0]
     first_paragraph.text = project.project_title
+    third_paragraph = doc.paragraphs[2]
+    if project.geo_files:
+        r = third_paragraph.add_run()
+        r.add_picture('project_map_image.jpg', width=Inches(5.0))
+        third_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
     map_paragraph = doc.paragraphs[10]
     # Remove the existing paragraph
     map_paragraph.text = ""
     r = map_paragraph.add_run()
-    r.add_picture('map_image.jpg', width=Inches(9.0))
+    r.add_picture('pop_map_image.jpg', width=Inches(9.0))
 
     if chapter.table == None:
         pass
