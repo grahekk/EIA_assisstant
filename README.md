@@ -37,19 +37,19 @@ flask run
 ```
 
 ## Structure
-app/: Contains the main application code.
-migrations/: Database migration files.
-eia_fast_app/: Contains the EIA specific logic.
-config.py: Configuration settings.
-EIA_class.py: Defines the EIA class structure.
-eia.py: Main entry point for the EIA logic.
+- app/: Contains the main application code written in flask. Contains flask templates and app logic.
+- migrations/: Database migration files.
+- eia_fast_app/: Contains the EIA specific logic. Uses FastAPI framework as alternative.
+- config.py: Configuration settings.
+- EIA_class.py: Defines the EIA class structure.
+- eia.py: Main entry point for the EIA logic.
 
 ## Contributing
-Fork the repository.
-Create a new branch (git checkout -b feature-branch).
-Commit your changes (git commit -m 'Add some feature').
-Push to the branch (git push origin feature-branch).
-Open a Pull Request.
+- Fork the repository.
+- Create a new branch (git checkout -b feature-branch).
+- Commit your changes (git commit -m 'Add some feature').
+- Push to the branch (git push origin feature-branch).
+- Open a Pull Request.
 
 ## License
 This project is licensed under the MIT License.
