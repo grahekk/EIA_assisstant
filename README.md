@@ -1,10 +1,11 @@
 # EIA Assistant
-This is an app that automates the reporting of Environmental Impact Assessments (EIA).
+This is an app that automates the reporting of Environmental Impact Assessments (EIA). Built with Flask, it is a full-stack application designed to simplify and streamline the entire EIA process. The app supports the inclusion of data from various domains such as biology, Natura 2000, protected areas, forestry, geology, hydrology, and more. It features a Leaflet map in the frontend for interactive data visualization.
 
 ## Features
-Automates the creation of EIA reports.
-Provides an efficient workflow for EIA documentation.
-Supports data import and export.
+- Automates the creation of EIA reports.
+- Provides an efficient workflow for EIA documentation.
+- Supports data import and export from various environmental domains.
+- Includes a Leaflet map for interactive data visualization.
 
 ## Installation
 Clone the repository:
